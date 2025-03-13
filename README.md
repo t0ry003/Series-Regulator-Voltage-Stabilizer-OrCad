@@ -22,12 +22,13 @@ The stabilizer consists of the following key elements:
    - **Overtemperature Protection**: Monitors and prevents overheating of key components.
 
 ## Schematic Diagram
-poza
+<img src="Proiect docs/electric-schematic.png" alt="Schematic Design" style="zoom:75%;" />
 
 ## PCB Design
 This project includes a **fully designed PCB layout**, which can be fabricated for practical testing and implementation.
-poza
-poza 3d
+<img src="Proiect Docs/pcb-design.png" style="zoom:75%;" />
+
+<img src="Proiect Docs/3D-pcb-view.png" style="zoom:75%;" />
 
 ## Simulations & Testing
 Multiple simulations have been conducted to verify:

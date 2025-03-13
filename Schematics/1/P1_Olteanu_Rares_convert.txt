@@ -1,0 +1,12 @@
+The conversion of the project was successful.
+
+The new directory structure is as follows:
+
+C:/Users/rares/Desktop/P1_2024_434D_Olteanu_Rares_Cristian_SERS_N20_OrCad/Schematics/1
+    P1_Olteanu_Rares.opj
+    p1_olteanu_rares.dsn
+C:/Users/rares/Desktop/P1_2024_434D_Olteanu_Rares_Cristian_SERS_N20_OrCad/Schematics/1/P1_Olteanu_Rares-PSpiceFiles
+C:/Users/rares/Desktop/P1_2024_434D_Olteanu_Rares_Cristian_SERS_N20_OrCad/Schematics/1/P1_Olteanu_Rares-PSpiceFiles/FINAL
+C:/Users/rares/Desktop/P1_2024_434D_Olteanu_Rares_Cristian_SERS_N20_OrCad/Schematics/1/P1_Olteanu_Rares-PSpiceFiles/SCHEMATIC1
+C:/Users/rares/Desktop/P1_2024_434D_Olteanu_Rares_Cristian_SERS_N20_OrCad/Schematics/1/P1_Olteanu_Rares-PSpiceFiles/SCHEMATIC2
+C:/Users/rares/Desktop/P1_2024_434D_Olteanu_Rares_Cristian_SERS_N20_OrCad/Schematics/1/P1_Olteanu_Rares-PSpiceFiles/SCHEMATIC3

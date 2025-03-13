@@ -1,0 +1,353 @@
+(ExpressProject "P1_Olteanu_Rares"
+  (ProjectVersion "19981106")
+  (SoftwareVersion "24.1 S001 (4250575)  [11/4/2024]-[12/06/24]")
+  (ProjectType "Analog or A/D Mixed Mode")
+  (Folder "Design Resources"
+    (Folder "Library"
+      (File "c:\cadence\spb_24.1\tools\capture\library\p1_ers\bzx84c2v7.lib"
+        (DisplayName
+           "c:\cadence\spb_24.1\tools\capture\library\p1_ers\bzx84c2v7.lib")
+        (Type "EDIF Netlist"))
+      (File "c:\cadence\spb_24.1\tools\capture\library\p1_ers\bc856b.lib"
+        (DisplayName
+           "c:\cadence\spb_24.1\tools\capture\library\p1_ers\bc856b.lib")
+        (Type "EDIF Netlist"))
+      (File "c:\cadence\spb_24.1\tools\capture\library\p1_ers\bc846b.lib"
+        (DisplayName
+           "c:\cadence\spb_24.1\tools\capture\library\p1_ers\bc846b.lib")
+        (Type "EDIF Netlist"))
+      (File "c:\cadence\spb_24.1\tools\capture\library\p1_ers\bzx84c6v2.lib"
+        (DisplayName
+           "c:\cadence\spb_24.1\tools\capture\library\p1_ers\bzx84c6v2.lib")
+        (Type "EDIF Netlist"))
+      (File "c:\cadence\spb_24.1\tools\capture\library\p1_ers\mjd31cg.lib"
+        (DisplayName
+           "c:\cadence\spb_24.1\tools\capture\library\p1_ers\mjd31cg.lib")
+        (Type "EDIF Netlist")))
+    (NoModify)
+    (BuildFileAddedOrDeleted "x")
+    (CompileFileAddedOrDeleted "x")
+    (ANNOTATE_Scope "0")
+    (ANNOTATE_Mode "1")
+    (ANNOTATE_Action "0")
+    (ANNOTATE_Reset_References_to_1 "FALSE")
+    (ANNOTATE_No_Page_Number_Change "TRUE")
+    (ANNOTATE_Property_Combine "{Value}{Source Package}")
+    (DOCKED "TRUE")
+    (DOCKING_POSITION "59420")
+    (PSPICE_Regenerate_Netlist_Flag "FALSE")
+    (RootChangedForceReNetlist "x")
+    (BOM_Scope "1")
+    (BOM_Mode "0")
+    (BOM_Report_File "D:\ERS\P1_OLTEANU_RARES.BOM")
+    (BOM_Merge_Include "FALSE")
+    (BOM_Property_Combine_7.0 "{Item}\t{Quantity}\t{Reference}\t{Value}")
+    (BOM_Header "Item\tQuantity\tReference\tPart")
+    (BOM_Include_File "D:\ERS\P1_OLTEANU_RARES.INC")
+    (BOM_Include_File_Combine_7.0 "{Item}\t{Quantity}\t{Reference}\t{Value}")
+    (BOM_One_Part_Per_Line "FALSE")
+    (Open_BOM_in_Excel "FALSE")
+    (BOM_View_Output "FALSE")
+    (Board_sim_option "VHDL_flow")
+    (DRC_Scope "0")
+    (DRC_Action "0")
+    (DRC_Create_Warnings "TRUE")
+    (DRC_View_Output "TRUE")
+    (DRC_View_Output_Type "2")
+    (DRC_Preserved_Waived "FALSE")
+    (RUN_Online_Rules "TRUE")
+    (DRC_Run_Electrical_Rules "TRUE")
+    (DRC_Check_Single_Node_Nets "TRUE")
+    (DRC_Check_No_Driving_Source "TRUE")
+    (DRC_Check_Duplicate_NetNames "TRUE")
+    (DRC_Check_Off-Page_Connectors "FALSE")
+    (DRC_Check_Ports "FALSE")
+    (DRC_Check_Unconnected_Nets "TRUE")
+    (DRC_Check_Floating_Pins "TRUE")
+    (DRC_SDT_Compatibility "FALSE")
+    (DRC_Check_Single_Node_Nets_Online "FALSE")
+    (DRC_Check_No_Driving_Source_Online "FALSE")
+    (DRC_Check_Duplicate_NetNames_Online "FALSE")
+    (DRC_Check_Off-Page_Connectors_Online "FALSE")
+    (DRC_Check_Ports_Online "FALSE")
+    (DRC_Check_Unconnected_Nets_Online "FALSE")
+    (DRC_Check_Floating_Pins_Online "FALSE")
+    (DRC_Run_Electrical_Reports "TRUE")
+    (DRC_Report_Netnames "FALSE")
+    (DRC_Report_Off-grid_Objects "FALSE")
+    (DRC_Report_Ports_and_Off-page_Connectors "FALSE")
+    (DRC_Check_for_Misleading_TAP "FALSE")
+    (DRC_Run_Physical_Rules "TRUE")
+    (DRC_Check_Physical_Power_Pins_Visibility "TRUE")
+    (DRC_Check_PCB_Footprint_Property "TRUE")
+    (DRC_Check_Normal_Convert_View_Sync "TRUE")
+    (DRC_Check_Incorrect_PinGroup_Assignment "TRUE")
+    (DRC_Check_High_Speed_Props_Syntax "TRUE")
+    (DRC_Check_Missing_Pin_Numbers "TRUE")
+    (DRC_Check_Device_With_No_Pins "TRUE")
+    (DRC_Check_Power_Ground_Short "TRUE")
+    (DRC_Check_Name_Prop_For_HierBlocks "TRUE")
+    (DRC_Check_Physical_Power_Pins_Visibility_Online "FALSE")
+    (DRC_Check_PCB_Footprint_Property_Online "FALSE")
+    (DRC_Check_Normal_Convert_View_Sync_Online "FALSE")
+    (DRC_Check_Incorrect_PinGroup_Assignment_Online "FALSE")
+    (DRC_Check_Missing_Pin_Numbers_Online "FALSE")
+    (DRC_Check_Device_With_No_Pins_Online "FALSE")
+    (DRC_Check_Power_Ground_Short_Online "FALSE")
+    (DRC_Check_Name_Prop_For_HierBlocks_Online "FALSE")
+    (DRC_Run_Physical_Reports "TRUE")
+    (DRC_Visible_Power_pins "FALSE")
+    (DRC_Report_Unused_Part_Packages "TRUE")
+    (DRC_Type_Mismatch "TRUE")
+    (DRC_Identical_References "TRUE")
+    (DRC_Run_Simulation_Rules "TRUE")
+    (DRC_Check_Pspice_Model_Lib_Path_Online "TRUE")
+    (DRC_Run_Custom_Rules "FALSE")
+    (DRC_Report_File "D:\ERS\P1_OLTEANU_RARES.DRC")
+    (Annotate_Page_Order "0")
+    (ANNOTATE_IncludeNonPrimitive "TRUE")
+    (ANNOTATE_PreserveDesignator "FALSE")
+    (ANNOTATE_PreserveUserEdits "FALSE")
+    (ANNOTATE_Refdes_Control_Required "FALSE")
+    (Update_Instace_for_External_Design "FALSE")
+    (Annotate_type "Top-Bottom")
+    (width_pages "100")
+    (width_start "80")
+    (width_End "80")
+    (Netlist_TAB "0")
+    (Create Allegro Netlist "TRUE")
+    (Allegro Netlist Directory "allegro")
+    (View Allegro Netlist Files "FALSE")
+    (Allegro Netlist Create DCF File "FALSE")
+    (Update Allegro Board "FALSE")
+    (Allegro Netlist Output Board File ".\allegro\p1_olteanu_rares.brd")
+    (Allegro Netlist Remove Etch "FALSE")
+    (Allegro Netlist Place Changed Component "ALWAYS_REPLACE")
+    (Allegro Netlist Open Board in Allegro "ALLEGRO")
+    (Allegro Setup Backup Versions "3")
+    (Allegro Setup Ignore Constraints "FALSE")
+    (Allegro Setup Part Type Length "255")
+    (Allegro Netlist Combine Property String "PCB Footprint")
+    (Allegro Netlist Ignore Fixed Property "FALSE")
+    (Allegro Netlist User Defined Property "FALSE")
+    (File ".\p1_olteanu_rares.dsn"
+      (Type "Schematic Design")))
+  (Folder "Layout"
+    (File ".\allegro\p1_olteanu_rares.brd"
+      (Type "Board File")
+      (OutputBoard ".\allegro\p1_olteanu_rares.brd")
+      (NetListPath ".\allegro")
+      (ActiveBoard "1")))
+  (Folder "Outputs"
+    (File ".\p1_olteanu_rares.bom"
+      (Type "Report"))
+    (File ".\p1_olteanu_rares.drc"
+      (Type "Report"))
+    (File ".\P1_OLTEANU_RARES_OUTPUT\BOM.SCH.CSV"
+      (Type "Report")))
+  (Folder "PSpice Resources"
+    (Folder "Stimulus Files"
+      (Sort User))
+    (Folder "Include Files"
+      (Sort User))
+    (Folder "Simulation Profiles")
+    (Folder "Model Libraries"
+      (File "c:\cadence\spb_24.1\tools\capture\library\p1_ers\bzx84c2v7.lib"
+        (DisplayName
+           "c:\cadence\spb_24.1\tools\capture\library\p1_ers\bzx84c2v7.lib")
+        (Type "PSpiceLibrary"))
+      (File "c:\cadence\spb_24.1\tools\capture\library\p1_ers\bc856b.lib"
+        (DisplayName
+           "c:\cadence\spb_24.1\tools\capture\library\p1_ers\bc856b.lib")
+        (Type "PSpiceLibrary"))
+      (File "c:\cadence\spb_24.1\tools\capture\library\p1_ers\bc846b.lib"
+        (DisplayName
+           "c:\cadence\spb_24.1\tools\capture\library\p1_ers\bc846b.lib")
+        (Type "PSpiceLibrary"))
+      (File "c:\cadence\spb_24.1\tools\capture\library\p1_ers\bzx84c6v2.lib"
+        (DisplayName
+           "c:\cadence\spb_24.1\tools\capture\library\p1_ers\bzx84c6v2.lib")
+        (Type "PSpiceLibrary"))
+      (File "c:\cadence\spb_24.1\tools\capture\library\p1_ers\mjd31cg.lib"
+        (DisplayName
+           "c:\cadence\spb_24.1\tools\capture\library\p1_ers\mjd31cg.lib")
+        (Type "PSpiceLibrary"))
+      (Sort User)))
+  (DefaultLibraryBrowseDirectory "library\PSpice")
+  (PartMRUSelector
+    (MLED81
+      (FullPartName "MLED81.Normal")
+      (LibraryName "C:\CADENCE\SPB_24.1\TOOLS\CAPTURE\LIBRARY\P1_ERS\OPTO.OLB")
+      (DeviceIndex "0"))
+    (BZX84-C2V7
+      (FullPartName "BZX84-C2V7.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_24.1\TOOLS\CAPTURE\LIBRARY\P1_ERS\BZX84C2V7.OLB")
+      (DeviceIndex "0"))
+    (BZX84-C6V2
+      (FullPartName "BZX84-C6V2.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_24.1\TOOLS\CAPTURE\LIBRARY\P1_ERS\BZX84C6V2.OLB")
+      (DeviceIndex "0"))
+    (QMJD31C
+      (FullPartName "QMJD31C.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_24.1\TOOLS\CAPTURE\LIBRARY\P1_ERS\MJD31CG.OLB")
+      (DeviceIndex "0"))
+    (MJD31CG
+      (FullPartName "MJD31CG.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_24.1\TOOLS\CAPTURE\LIBRARY\P1_FPRT\MJD31CG1.OLB")
+      (DeviceIndex "0"))
+    (BZX84-C6V2,215
+      (FullPartName "BZX84-C6V2,215.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_24.1\TOOLS\CAPTURE\LIBRARY\P1_FPRT\BZX84-C6V2_215.OLB")
+      (DeviceIndex "0"))
+    (BZX84-C2V7,215
+      (FullPartName "BZX84-C2V7,215.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_24.1\TOOLS\CAPTURE\LIBRARY\P1_FPRT\BZX84-C2V7_215.OLB")
+      (DeviceIndex "0"))
+    (GND
+      (LibraryName "C:\CADENCE\SPB_24.1\TOOLS\CAPTURE\LIBRARY\CAPSYM.OLB")
+      (DeviceIndex "0"))
+    (BC856B
+      (FullPartName "BC856B.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_24.1\TOOLS\CAPTURE\LIBRARY\P1_FPRT\BC856B.OLB")
+      (DeviceIndex "0"))
+    (BC846B
+      (FullPartName "BC846B.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_24.1\TOOLS\CAPTURE\LIBRARY\P1_FPRT\BC846B.OLB")
+      (DeviceIndex "0"))
+    (WF08P152JTL
+      (FullPartName "WF08P152JTL.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_24.1\TOOLS\CAPTURE\LIBRARY\P1_FPRT\WF08P152JTL.OLB")
+      (DeviceIndex "0"))
+    (OF-SMD2012B
+      (FullPartName "OF-SMD2012B.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_24.1\TOOLS\CAPTURE\LIBRARY\P1_FPRT\OF-SMD2012B.OLB")
+      (DeviceIndex "0"))
+    (3314G-1-502E
+      (FullPartName "3314G-1-502E.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_24.1\TOOLS\CAPTURE\LIBRARY\P1_FPRT\3314G-1-502E.OLB")
+      (DeviceIndex "0"))
+    (0805S8J0331T5E
+      (FullPartName "0805S8J0331T5E.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_24.1\TOOLS\CAPTURE\LIBRARY\P1_FPRT\0805S8J0331T5E.OLB")
+      (DeviceIndex "0"))
+    (0805S8J0272T5E
+      (FullPartName "0805S8J0272T5E.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_24.1\TOOLS\CAPTURE\LIBRARY\P1_FPRT\0805S8J0272T5E.OLB")
+      (DeviceIndex "0"))
+    (0
+      (LibraryName "C:\CADENCE\SPB_24.1\TOOLS\CAPTURE\LIBRARY\CAPSYM.OLB")
+      (DeviceIndex "0"))
+    (CON2
+      (FullPartName "CON2.Normal")
+      (LibraryName "C:\CADENCE\SPB_22.1\TOOLS\CAPTURE\LIBRARY\CONNECTOR.OLB")
+      (DeviceIndex "0"))
+    (CON1
+      (FullPartName "CON1.Normal")
+      (LibraryName "C:\CADENCE\SPB_24.1\TOOLS\CAPTURE\LIBRARY\CONNECTOR.OLB")
+      (DeviceIndex "0"))
+    (R
+      (FullPartName "R.Normal")
+      (LibraryName
+         "C:\USERS\TEODO\DOWNLOADS\ORCAD\TOOLS\CAPTURE\LIBRARY\PSPICE\ANALOG.OLB")
+      (DeviceIndex "0"))
+    (L
+      (FullPartName "L.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_22.1\TOOLS\CAPTURE\LIBRARY\PSPICE\ANALOG.OLB")
+      (DeviceIndex "0"))
+    (VAC
+      (FullPartName "VAC.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_22.1\TOOLS\CAPTURE\LIBRARY\PSPICE\SOURCE.OLB")
+      (DeviceIndex "0"))
+    (C
+      (FullPartName "C.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_22.1\TOOLS\CAPTURE\LIBRARY\PSPICE\ANALOG.OLB")
+      (DeviceIndex "0"))
+    (IAC
+      (FullPartName "IAC.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_22.1\TOOLS\CAPTURE\LIBRARY\PSPICE\SOURCE.OLB")
+      (DeviceIndex "0"))
+    (LED
+      (FullPartName "LED.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_22.1\TOOLS\CAPTURE\TCLSCRIPTS\CAPPSPICEMODELAPP\LED\HYBRID\SUPPORTFILES\LED.OLB")
+      (DeviceIndex "0"))
+    (PORTRIGHT-L
+      (LibraryName "C:\CADENCE\SPB_22.1\TOOLS\CAPTURE\LIBRARY\CAPSYM.OLB")
+      (DeviceIndex "0")))
+  (LastUsedLibraryBrowseDirectory
+     "C:\Cadence\SPB_24.1\tools\capture\library\P1_ERS")
+  (MPSSessionName "rares")
+  (Folder "Logs"
+    (File ".\allegro\netlist.log"
+      (Type "Log File")
+      (LogFile "d:\ers\allegro\netlist.log"))
+    (File ".\allegro\netrev.lst"
+      (Type "Log File")
+      (LogFile "d:\ers\allegro\netrev.lst"))
+    (File ".\allegro\eco.txt"
+      (Type "Log File")
+      (LogFile "d:\ers\allegro\eco.txt"))
+    (File ".\allegro\genfeed.log"
+      (Type "Log File")
+      (LogFile "d:\ers\allegro\genfeed.log"))
+    (File ".\allegro_test\netlist.log"
+      (Type "Log File")
+      (LogFile "d:\ers\allegro_test\netlist.log"))
+    (File ".\allegro_test\netrev.lst"
+      (Type "Log File")
+      (LogFile "d:\ers\allegro_test\netrev.lst"))
+    (File ".\allegro_test\eco.txt"
+      (Type "Log File")
+      (LogFile "d:\ers\allegro_test\eco.txt")))
+  (GlobalState
+    (FileView
+      (Path "Design Resources")
+      (Path "Design Resources"
+         "C:\Users\rares\Desktop\P1_2024_434D_Olteanu_Rares_Cristian_SERS_N20_OrCad\Schematics\1\p1_olteanu_rares.dsn")
+      (Path "Design Resources"
+         "C:\Users\rares\Desktop\P1_2024_434D_Olteanu_Rares_Cristian_SERS_N20_OrCad\Schematics\1\p1_olteanu_rares.dsn"
+         "FINAL")
+      (Path "Design Resources" "Library")
+      (Path "Layout")
+      (Path "Outputs")
+      (Path "PSpice Resources")
+      (Path "PSpice Resources" "Model Libraries")
+      (Path "Logs")
+      (Select "Design Resources"
+         "C:\Users\rares\Desktop\P1_2024_434D_Olteanu_Rares_Cristian_SERS_N20_OrCad\Schematics\1\p1_olteanu_rares.dsn"
+         "FINAL" "FINAL"))
+    (HierarchyView)
+    (Doc
+      (Type "COrCapturePMDoc")
+      (Frame
+        (Placement "44 0 1 -1 -1 -1 -1 0 257 0 652"))
+      (Tab 0))
+    (Doc
+      (Type "COrSchematicDoc")
+      (Frame
+        (Placement "44 0 1 -1 -1 -1 -1 5 1617 24 670")
+        (Scroll "-305 0")
+        (Zoom "100")
+        (Occurrence "/"))
+      (Path
+         "C:\USERS\RARES\DESKTOP\P1_2024_434D_OLTEANU_RARES_CRISTIAN_SERS_N20_ORCAD\SCHEMATICS\1\P1_OLTEANU_RARES.DSN")
+      (Schematic "FINAL")
+      (Page "FINAL")))
+  (ISPCBBASICLICENSE "false"))

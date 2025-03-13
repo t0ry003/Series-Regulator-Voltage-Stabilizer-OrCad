@@ -1,0 +1,2411 @@
+* Library of optocoupler models
+
+*  Copyright Cadence Design Systems, Inc. 2002 All Rights Reserved.
+*
+*
+* $Revision:   1.4  $
+* $Author:   HIRASUNA  $
+* $Date:   17 May 2002 $
+* 
+* $Modification History: Sripada modified on Thursday, July 20, 2006 to fix PCR 832797
+*                        
+* $Modification History: Added Optocoupler models on Thursday, June 19, 2008
+* HCPL-2200,HCPL-2219	Hewlett Packard
+* HCPL-2201,HCPL-2201,HCPL-2211,HCPL-2212,HCPL-2231,HCPL-2232,HCPL-0201,HCPL-0211	Agilent Tech.
+*******************************************************************************
+*.model A4N25
+* 6-pin DIP: pin #1   #2   #4   #5   #6
+*		      |    |    |    |    |
+.subckt A4N25	pin1 pin2 pin4 pin5 pin6	params: rel_CTR=1
+*		Motorola	pid=4N25
+*		88-01-04 pwt
+*		88-01-18 pwt	rework Cje approximation
+
+* The data sheet used for this model is from Motorola: it was the most
+* complete for DC and switching parameters, and is was easy to find the
+* component IR-LED and phototransistor as separate devices for further
+* specifications.
+*
+  d_MainLED	pin1 pin2	MainLED
+  d_PhotoLED	pin1 1		PhotoLED .001
+  v_PhotoLED	1 pin2		0
+*
+  f_TempComp	0 2		v_PhotoLED 1.7
+  r_TempComp	2 0		TempComp {rel_CTR}
+*
+  g_BaseSrc	5 6 2 0		.9
+  q_PhotoBJT	5 6 4		PhotoBJT
+  r_C		5 pin5		.1
+  r_B		6 pin6		.1
+  r_E		4 pin4		.1
+*
+* Since active devices dominate pin-to-pin capacitance on each "side" of the
+* optocoupler, isolation is modeled by identical capacitances and resistances
+* linked to a common point; this gives isolation of .5pF and 1E+11 ohms
+  c_1		pin1 7		.4p
+  r_1		pin1 7		.12T
+  c_2		pin2 7		.4p
+  r_2		pin2 7		.12T
+  c_4		pin4 7		.4p
+  r_4		pin4 7		.12T
+  c_5		pin5 7		.4p
+  r_5		pin5 7		.12T
+  c_6		pin6 7		.4p
+  r_6		pin6 7		.12T
+*
+* Similar to Motorola MLED15.
+.model MainLED  D(Is=10.01e-21 Rs=2.049 Ikf=11.84 N=1.053 Xti=3 Cjo=40p M=.34 
++                Vj=.75 Isr=30n Nr=3.8 Bv=6 Ibv=100u Tt=.5u)
+
+* Models photon generation: same as MainLED except no AC effects, no breakdown.
+.model PhotoLED D(Is=1.1p Rs=.66 Ikf=30m N=1.9 Xti=3 Cjo=0   M=.34 Vj=.75
++		Isr=30n Nr=3.8 Bv=0 Tt=0)
+
+* Temperature compensation for system: 1.38x @ -55'C, .54x @ +100'C, all @ 10mA
+* Note: the photo BJT has its own temperature corrections, which must be kept
+* as the transistor is electrically available.
+.model TempComp	RES(R=1 Tc1=-11.27m Tc2=43.46u)
+*
+* Similar to Motorola MDR3050; Hfe=325 @ Ic=500uA, Vce=5V
+* Use beta variation (w/Parts) to model change in current-transfer ratio (CTR).
+* Hand adjust reverse beta (Br) to match saturation characteristics.
+* Set Isc to model dark current.
+* Hand adjust Cjc to match fall time @ Ic=10mA (which yields rise time, too).
+* Hand adjust reverse transit-time (Tr) to match storage time @ Ic=10mA.
+* Delay time set by LED I-V and C-V characteristics; set Cje to 25% of Cjc,
+* inspection of phototransistor chip layouts show the emitter area is 20%-25%
+* that of the collector area.  The same layouts show that base resistance is
+* made negligible by design; also, the operating currents are small.
+* Hand adjust forward transit-time (Tf) to match MDR3050 pulse data.  Check
+* against 4N25 frequency response (Fig 11, 12).
+.model PhotoBJT NPN(Is=10f Xti=3 Vaf=60
++		Bf=400 Ne=3.75 Ise=580p Ikf=.26 Xtb=1.5
++		Br=.04 Nc=2    Isc=3.5n
++		Cjc=10p  Mjc=.3333 Vjc=.75 Tr=88u
++		Cje=2.5p Mje=.3333 Vje=.75 Tf=1.5n)
+.ends
+*$
+*******************************************************************************
+*.model A4N25A
+* 6-pin DIP: pin #1   #2   #4   #5   #6
+*                 |    |    |    |    |
+.subckt A4N25A	pin1 pin2 pin4 pin5 pin6   params: rel_CTR=1
+*		88-01-05 pwt
+* Same as 4N25 (UL recognized).
+  x1 pin1 pin2 pin4 pin5 pin6 A4N25  params:  rel_CTR={rel_CTR}
+.ends
+*$
+*******************************************************************************
+*.model A4N26
+* 6-pin DIP: pin #1   #2   #4   #5   #6
+*                 |    |    |    |    |
+.subckt A4N26	pin1 pin2 pin4 pin5 pin6     params: rel_CTR=1
+*		88-01-05 pwt
+* Same as 4N25, lower isolation breakdown voltage.
+  x1 pin1 pin2 pin4 pin5 pin6 A4N25      params:  rel_CTR={rel_CTR}
+.ends
+*$
+*******************************************************************************
+*.model A4N27
+* 6-pin DIP: pin #1   #2   #4   #5   #6
+*                 |    |    |    |    |
+.subckt A4N27	pin1 pin2 pin4 pin5 pin6    params: rel_CTR=0.5
+*		88-01-05 pwt
+* Same as 4N25, lower CTR, lower isolation breakdown voltage.
+  x1 pin1 pin2 pin4 pin5 pin6 A4N25   params:  rel_CTR={rel_CTR}
+.ends
+*$
+*******************************************************************************
+*.model A4N28
+* 6-pin DIP: pin #1   #2   #4   #5   #6
+*                 |    |    |    |    |
+.subckt A4N28	pin1 pin2 pin4 pin5 pin6  params: rel_CTR=0.5
+*		88-01-05 pwt
+* Same as 4N25, lower CTR, lower isolation breakdown voltage.
+  x1 pin1 pin2 pin4 pin5 pin6 A4N25    params: rel_CTR={rel_CTR}
+.ends
+*$
+*******************************************************************************
+* A = diode anode
+* K = diode cathode
+* C = BJT collector
+* B = BJT base
+* E = BJT emitter
+.SUBCKT A4N32 A K C B E PARAMS: REL_CTR=1
+* 4N32 from Motorola Optoelectronics data book Q3/93  -  RPerez
+D1 A D Demit   ;Gallium arsenide infrared emitting diode
+Vsense D K 0    ;Diode Current sense -> IF
+* Gpcg models CTR 
+Gpcg C B TABLE  ;Photodetector {IC@IF * (normalized CTR at IF)/(Q1 BF)
++ {70m*REL_CTR*(8.448148613*0.998979389^(1/(abs(I(Vsense))+0.1p))*
++ I(Vsense)^0.449371295)/18k} (0,0) (0.3m,0.3m)
+Q1 C B V Qdtect1   ;phototransistor detector
+Q2 C V E E Qdtect2   ;Darlington
+.model Demit D IS=1P N=1.948621 RS=1.560495 BV=3 IBV=0.05U
++ CJO=18.8P VJ=0.532794 M=0.27985 EG=1.424 TT=500N
+.model Qdtect1 NPN IS=0.625P BF=135 NF=1.0941401 BR=10 TF=0 TR=1.2u
++ CJE=8.24P VJE=0.99 MJE=0.247851 CJC=8.01P VJC=0.514483 MJC=0.370451
++ ISC=0 VAF=275 IKF=0  ISE=0.1p
+.model Qdtect2 NPN IS=0.625P BF=135 NF=1.0941401 BR=10 TF=0 TR=1.2u
++ CJE=8.24P VJE=0.99 MJE=0.247851
++ ISC=0 VAF=275 IKF=0  ISE=0.1p ISS=0 CJS=3.82p VJS=0.99 MJS=0.200397
+.ends
+*$
+*******************************************************************************
+* A = diode anode
+* K = diode cathode
+* C = BJT collector
+* B = BJT base
+* E = BJT emitter
+.SUBCKT A4N33 A K C B E PARAMS: REL_CTR=1
+* 4N33 from Motorola Optoelectronics data book Q3/93  -  RPerez
+D1 A D Demit   ;Gallium arsenide infrared emitting diode
+Vsense D K 0    ;Diode Current sense -> IF
+* Gpcg models CTR 
+Gpcg C B TABLE  ;Photodetector {IC@IF * (normalized CTR at IF)/(Q1 BF)
++ {70m*REL_CTR*(8.448148613*0.998979389^(1/(abs(I(Vsense))+0.1p))*
++ I(Vsense)^0.449371295)/18k} (0,0) (0.3m,0.3m)
+Q1 C B V Qdtect1   ;phototransistor detector
+Q2 C V E E Qdtect2   ;Darlington
+.model Demit D IS=1P N=1.948621 RS=1.560495 BV=3 IBV=0.05U
++ CJO=18.8P VJ=0.532794 M=0.27985 EG=1.424 TT=500N
+.model Qdtect1 NPN IS=0.625P BF=135 NF=1.0941401 BR=10 TF=0 TR=1.2u
++ CJE=8.24P VJE=0.99 MJE=0.247851 CJC=8.01P VJC=0.514483 MJC=0.370451
++ ISC=0 VAF=275 IKF=0  ISE=0.1p
+.model Qdtect2 NPN IS=0.625P BF=135 NF=1.0941401 BR=10 TF=0 TR=1.2u
++ CJE=8.24P VJE=0.99 MJE=0.247851
++ ISC=0 VAF=275 IKF=0  ISE=0.1p ISS=0 CJS=3.82p VJS=0.99 MJS=0.200397
+.ends
+*$
+*******************************************************************************
+* A = diode anode
+* K = diode cathode
+* C = BJT collector
+* B = BJT base
+* E = BJT emitter
+.SUBCKT A4N47A A K C B E PARAMS: REL_CTR=1
+* 4N47A from TI   * RAP  5/97
+D1 A D Demit   ;Gallium arsenide infrared emitting diode
+Vsense D K 0    ;Diode Current sense -> IF
+Hd   R 0 Vsense 1
+Rd   R T 10K
+Cd   T 0 0.15n
+* Gpcg models CTR 
+Gpcg C B TABLE  ;Photodetector {IC@IF * (normalized CTR at IF)/(Q1 BF)
++ {0.75m*REL_CTR*(128393.7*0.999895312^(1/(abs(V(T))+0.1p))*V(T)^1.6857559)/300}
++ (0,0) (10,10)
+Q1 C B E E Qdtect   ;phototransistor detector
+.model Demit D IS=6.53E-13 N=1.983045 RS=21.26446 BV=2 IBV=10U
++ CJO=18.8P VJ=0.532794 M=0.27985 EG=1.424 TT=500N
+* ISC controls dark current
+* IKF controls high current gain
+.model Qdtect NPN IS=20P BF=300 NF=1.3080447 BR=10 TF=7N TR=1.29u
++ CJE=3.7P VJE=0.99 MJE=0.2411274 CJC=4.03P VJC=0.597478 MJC=0.431978
++ ISC=0.01p VAF=6.5 IKF=0.5 ISS=0 CJS=2.03p VJS=0.61 MJS=0.31
+.ends
+*$
+*******************************************************************************
+* A = diode anode
+* K = diode cathode
+* C = BJT collector
+* B = BJT base
+* E = BJT emitter
+.SUBCKT A4N48A A K C B E PARAMS: REL_CTR=1
+* 4N48A from TI   * RAP  5/97
+D1 A D Demit   ;Gallium arsenide infrared emitting diode
+Vsense D K 0    ;Diode Current sense -> IF
+Hd   R 0 Vsense 1
+Rd   R T 10K
+Cd   T 0 0.15n
+* Gpcg models CTR 
+Gpcg C B TABLE  ;Photodetector {IC@IF * (normalized CTR at IF)/(Q1 BF)
++ {1.2m*REL_CTR*(128393.7*0.999895312^(1/(abs(V(T))+0.1p))*V(T)^1.6857559)/300}
++ (0,0) (10,10)
+Q1 C B E E Qdtect   ;phototransistor detector
+.model Demit D IS=6.53E-13 N=1.983045 RS=21.26446 BV=2 IBV=10U
++ CJO=18.8P VJ=0.532794 M=0.27985 EG=1.424 TT=500N
+* ISC controls dark current
+* IKF controls high current gain
+.model Qdtect NPN IS=20P BF=300 NF=1.3080447 BR=10 TF=7.5N TR=1.29u
++ CJE=3.7P VJE=0.99 MJE=0.2411274 CJC=4.03P VJC=0.597478 MJC=0.431978
++ ISC=0.01p VAF=6.5 IKF=0.5 ISS=0 CJS=2.03p VJS=0.61 MJS=0.31
+.ends
+*$
+*******************************************************************************
+* A = diode anode
+* K = diode cathode
+* C = BJT collector
+* B = BJT base
+* E = BJT emitter
+.SUBCKT A4N49A A K C B E PARAMS: REL_CTR=1
+* 4N49A from TI   * RAP  5/97
+D1 A D Demit   ;Gallium arsenide infrared emitting diode
+Vsense D K 0    ;Diode Current sense -> IF
+Hd   R 0 Vsense 1
+Rd   R T 10K
+Cd   T 0 0.15n
+* Gpcg models CTR 
+Gpcg C B TABLE  ;Photodetector {IC@IF * (normalized CTR at IF)/(Q1 BF)
++ {1.35m*REL_CTR*(128393.7*0.999895312^(1/(abs(V(T))+0.1p))*V(T)^1.6857559)/300}
++ (0,0) (10,10)
+Q1 C B E E Qdtect   ;phototransistor detector
+.model Demit D IS=6.53E-13 N=1.983045 RS=21.26446 BV=2 IBV=10U
++ CJO=18.8P VJ=0.532794 M=0.27985 EG=1.424 TT=500N
+* ISC controls dark current
+* IKF controls high current gain
+.model Qdtect NPN IS=20P BF=300 NF=1.3080447 BR=10 TF=12N TR=1.29u
++ CJE=3.7P VJE=0.99 MJE=0.2411274 CJC=4.03P VJC=0.597478 MJC=0.431978
++ ISC=0.01p VAF=6.5 IKF=0.5 ISS=0 CJS=2.03p VJS=0.61 MJS=0.31
+.ends
+*$
+.SUBCKT and233gcp A C P  
+* and233gcp from AND   * I-Team@Nikkel 12/22/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC Dand233gcp
+.MODEL Dand233gcp D
++ IS=4.5973E-12
++ N=1.6133
++ RS=8.1500
++ IKF=3.0400E-3
++ CJO=1.0000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5
++ IBV=80e-6
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.154699706) * EXP(2.941312876-3.505898323*I(VLED))} 
++ (0,0) (100,100)
+
+VLED VC C
+.ENDS
+*$
+*******************************************************************************
+* A = Anode
+* C = Cathode
+* P = (light)Power as voltage input
+.SUBCKT BPW32 A C P PARAMS: Spec=1.0 Sensy=0.5
+* BPW32 from Siemens   * RAP 7/97
+Rdummy P 0 1G
+Rswt P LP 1k
+Cswt LP 0 0.6n
+DPD A C PhotoDet
+GPD C A TABLE {V(LP)* Spec * Sensy} (0,0) (1,1)
+.MODEL PhotoDet D IS=0.974p RS=0.1 N=1.986196 BV=7.1 IBV=0.1n 
++ CJO=99.2p VJ=0.455536 M=0.418717 TT=500n ISR=6p NR=100
+.ends
+*$
+*******************************************************************************
+* H = high
+* L = low
+.subckt bulb H L params: Vnom=120V Pnom=100W HCtau=4.082
+*
+* Tungsten Incandescent Lamp (Lightbulb)    * RAP 6/2/97 *
+*
+* To determine voltage, current through the terminals (H and L)
+* is sensed and multiplied by the filaments instantaneous resistance.
+*
+Vsense  H c 0      ;terminal current sense
+*
+* Current is multiplied by nominal resistance and scaled to get voltage
+Efilmnt c L VALUE = {I(Vsense) * V(res) * Vnom * Vnom / Pnom}
+*
+Gpow    0 temp VALUE = {I(Vsense) * V(H,L)}   ;instantaneous power
+*
+* HCtau is used to set the heat capacity time constant.  Different
+* bulbs may have different time constants.
+Rtherml temp ambnt {2600/Pnom} ;temperature for nominal power=2600K+300K
+Ctherml temp 0 {(HCtau / 2600) * Pnom}   ;thermal capacitity
+Vambnt  ambnt 0 300             ;ambient temperature in degrees Kelvin
+*
+* Normalized resistance as a function of temperature.
+Eres res 0 TABLE {log(V(temp)/300)}
++ 0.0  0.06
++ 0.5  0.29
++ 1.0  0.56
++ 1.5  0.82
++ 2.0  0.94
++ 2.33 0.98
++ 2.405 1.04
++ 2.53 1.08
+*
+RGpath res 0 1Meg
+.ends
+*$
+*******************************************************************************
+* A = diode anode
+* K = diode cathode
+* C = BJT collector
+* B = BJT base
+* E = BJT emitter
+.SUBCKT CNY17-1 A K C B E PARAMS: REL_CTR=1
+* CNY17-1 from Motorola Optoelectronics data book Q3/93  -  RPerez
+D1 A D DCNY17   ;Gallium arsenide infrared emitting diode
+Vsense D K 0    ;Diode Current sense -> IF
+Hd   R 0 Vsense 1
+Rd   R T 10K
+Cd   T 0 0.15n
+* Gpcg models CTR 
+Gpcg C B TABLE  ;Photodetector {IC@IF * (normalized CTR at IF)*REL_CTR/(Q1 BF)
++ {6m*(0.9277*V(T)^3-1.2381*V(T)^2+100.4332*V(T)-0.02771)*REL_CTR/400}
++ (0,0) (10,10)
+Q1 C B E E QCNY17   ;phototransistor detector
+.model DCNY17 D IS=1P N=1.948621 RS=1.560495 BV=6 IBV=10U
++ CJO=18.8P VJ=0.532794 M=0.27985 EG=1.424 TT=500N
+* ISC controls dark current
+* IKF controls high current gain
+.model QCNY17 NPN IS=3.64P BF=400 NF=1.193293 BR=10 TF=2N TR=350n
++ CJE=5.16P VJE=0.99 MJE=0.2411274 CJC=18P VJC=0.597478 MJC=0.431978
++ ISC=0.207N VAF=65 IKF=0.09 ISS=0 CJS=7.74p VJS=0.61 MJS=0.31
+.ends
+*$
+*******************************************************************************
+* A = diode anode
+* K = diode cathode
+* C = BJT collector
+* B = BJT base
+* E = BJT emitter
+.SUBCKT CNY17-2 A K C B E PARAMS: REL_CTR=1
+* CNY17-2 from Motorola Optoelectronics data book Q3/93  -  RPerez
+D1 A D DCNY17   ;Gallium arsenide infrared emitting diode
+Vsense D K 0    ;Diode Current sense -> IF
+Hd   R 0 Vsense 1
+Rd   R T 10K
+Cd   T 0 0.25n
+* Gpcg models CTR 
+Gpcg C B TABLE  ;Photodetector {IC@IF * (normalized CTR at IF)*REL_CTR/(Q1 BF)
++ {10m*(0.9277*V(T)^3-1.2381*V(T)^2+100.4332*V(T)-0.02771)*REL_CTR/400}
++ (0,0) (10,10)
+Q1 C B E QCNY17   ;phototransistor detector
+.model DCNY17 D IS=1P N=1.948621 RS=1.560495 BV=6 IBV=10U
++ CJO=18.8P VJ=0.532794 M=0.27985 EG=1.424 TT=500N
+* ISC controls dark current
+* IKF controls high current gain
+.model QCNY17 NPN IS=3.64P BF=400 NF=1.193293 BR=10 TF=1N TR=30n
++ CJE=5.16P VJE=0.99 MJE=0.2411274 CJC=18P VJC=0.597478 MJC=0.431978
++ ISC=0.207N VAF=65 IKF=0.09 ISS=0 CJS=7.74p VJS=0.61 MJS=0.31
+.ends
+*$
+*******************************************************************************
+* A = diode anode
+* K = diode cathode
+* C = BJT collector
+* B = BJT base
+* E = BJT emitter
+.SUBCKT CNY17-3 A K C B E PARAMS: REL_CTR=1
+* CNY17-3 from Motorola Optoelectronics data book Q3/93  -  RPerez
+D1 A D DCNY17   ;Gallium arsenide infrared emitting diode
+Vsense D K 0    ;Diode Current sense -> IF
+Hd   R 0 Vsense 1
+Rd   R T 10K
+Cd   T 0 0.27n
+* Gpcg models CTR 
+Gpcg C B TABLE  ;Photodetector {IC@IF * (normalized CTR at IF)/(Q1 BF)
++ {15m*(0.9277*V(T)^3-1.2381*V(T)^2+100.4332*V(T)-0.02771)*REL_CTR/400}
++ (0,0) (10,10)
+Q1 C B E QCNY17   ;phototransistor detector
+.model DCNY17 D IS=1P N=1.948621 RS=1.560495 BV=6 IBV=10U
++ CJO=18.8P VJ=0.532794 M=0.27985 EG=1.424 TT=500N
+* ISC controls dark current
+* IKF controls high current gain
+.model QCNY17 NPN IS=3.64P BF=400 NF=1.193293 BR=10 TF=13N TR=375n
++ CJE=5.16P VJE=0.99 MJE=0.2411274 CJC=18P VJC=0.597478 MJC=0.431978
++ ISC=0.207N VAF=65 IKF=0.09 ISS=0 CJS=7.74p VJS=0.61 MJS=0.31
+.ends
+*$
+.SUBCKT GL8EG2 A C P  
+* GL8EG2 from SHARP   * I-Team@Nikkel 12/21/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DGL8EG2
+.MODEL DGL8EG2 D
++ IS=266.83E-15
++ N=1.4390
++ RS=8.4446
++ IKF=.2567
++ CJO=35.000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5
++ IBV=10e-6
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.4072382552656)*EXP(2.5093037724975-3.03080308029885*I(VLED))} 
++ (0,0) (100,100)
+VLED VC C
+.ENDS
+*$
+.SUBCKT GL8HD2 A C P  
+* GL8HD2 from SHARP   * I-Team@Nikkel 12/21/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DGL8HD2
+.MODEL DGL8HD2 D
++ IS=190.25E-12
++ N=1.7735
++ RS=8.1146
++ IKF=.48615
++ CJO=20.0000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5
++ IBV=10e-6
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.725216198)*EXP(4.01457602976167-32.93224122*I(VLED))} 
++ (0,0) (100,100)
+
+VLED VC C
+.ENDS
+*$
+.SUBCKT GL8HY2 A C P  
+* GL8HY2 from SHARP   * I-Team@Nikkel 12/21/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DGL8HY2
+.MODEL DGL8HY2 D
++ IS=214.89E-12
++ N=1.8906
++ RS=7.574
++ CJO=35.0000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5
++ IBV=10e-6
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.826117513921)*EXP(3.6619780820923-32.2608264611002*I(VLED))} 
++ (0,0) (100,100) 
+
+VLED VC C
+.ENDS
+*$
+.SUBCKT GL8LR2 A C P 
+* DGL8LR2 from SHARP   * I-Team@Nikkel  21/12/2000
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DGL8LR2
+.MODEL DGL8LR2 D
++ IS=10.505E-18
++ N=.63632
++ RS=2.3645
++ IKF=12.202E-6
++ CJO=30.0000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5
++ IBV=10e-6
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.221867908)* EXP(1.831501407-10.60445807*I(VLED))} 
++ (0,0) (100,100)
+VLED VC C
+.ENDS
+*$
+.SUBCKT GL8TR2 A C P  
+* GL8TR2 from SHARP   * I-Team@Nikkel 12/21/2000
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DGL8TR2
+.MODEL DGL8TR2 D
++ IS=4.000E-10
++ N=1.6058
++ RS=.94694
++ IKF=.16719
++ CJO=1.0000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5
++ IBV=10E-6
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.33276461750432) * EXP(1.85978954134279-19.0992238529157*I(VLED))}
++ (0,0) (100,100) 
+VLED VC C
+.ENDS
+*$
+*******************************************************************************
+*.model H11A2
+* 6-pin DIP: pin #1   #2   #4   #5   #6
+*                 |    |    |    |    |
+.subckt H11A2	pin1 pin2 pin4 pin5 pin6    params: rel_CTR=1
+*		88-01-05 pwt
+* Every manufacturer seems to use their own 4N25 as an equivalent device.
+  x1 pin1 pin2 pin4 pin5 pin6 A4N25     params: rel_CTR={rel_CTR}
+.ends
+*$
+*******************************************************************************
+*.model H11A3
+* 6-pin DIP: pin #1   #2   #4   #5   #6
+*                 |    |    |    |    |
+.subckt H11A3	pin1 pin2 pin4 pin5 pin6    params: rel_CTR=1
+*		88-01-05 pwt
+* Same as H11A2, higher isolation breakdown voltage.
+  x1 pin1 pin2 pin4 pin5 pin6 A4N25     params: rel_CTR={rel_CTR}
+.ends
+*$
+*******************************************************************************
+*.model H11A4
+* 6-pin DIP: pin #1   #2   #4   #5   #6
+*                 |    |    |    |    |
+.subckt H11A4	pin1 pin2 pin4 pin5 pin6    params: rel_CTR=1
+*		88-01-05 pwt
+* Every manufacturer seems to use their own 4N27 as an equivalent device.
+  x1 pin1 pin2 pin4 pin5 pin6 A4N27    params: rel_CTR={rel_CTR}
+.ends
+*$
+*******************************************************************************
+*.model H11A520
+* 6-pin DIP: pin #1   #2   #4   #5   #6
+*                 |    |    |    |    |
+.subckt H11A520	pin1 pin2 pin4 pin5 pin6   params: rel_CTR=1
+*		88-01-05 pwt
+* Same as H11A2, higher isolation breakdown voltage.
+  x1 pin1 pin2 pin4 pin5 pin6 A4N25     params: rel_CTR={rel_CTR}
+.ends
+*$
+*******************************************************************************
+* A = diode anode
+* K = diode cathode
+* C = BJT collector
+* B = BJT base
+* E = BJT emitter
+.SUBCKT H11AV1 A K C B E PARAMS: REL_CTR=1
+* H11AV1 from Motorola   * RAP  5/97
+D1 A D Demit   ;Gallium arsenide infrared emitting diode
+Vsense D K 0    ;Diode Current sense -> IF
+Hd   R 0 Vsense 1
+Rd   R T 10K
+Cd   T 0 0.11n
+* Gpcg models CTR 
+Gpcg C B TABLE  ;Photodetector {IC@IF * (normalized CTR at IF)/(Q1 BF)
++ {15m*REL_CTR*(140.11034*0.999716761^(1/(abs(V(T))+0.1p))*V(T)^1.0873374)/400}
++ (0,0) (10,10)
+Q1 C B E E Qdtect   ;phototransistor detector
+.model Demit D IS=1.22p N=1.962592 RS=1.584805 BV=6 IBV=10U
++ CJO=18.8P VJ=0.532794 M=0.27985 EG=1.424 TT=500N
+* ISC controls dark current
+* IKF controls high current gain
+.model Qdtect NPN IS=12.5P BF=400 NF=1.2742607 BR=10 TF=1.5N TR=2.2u
++ CJE=7.62P VJE=0.99 MJE=0.243609 CJC=19.64P VJC=0.445269 MJC=0.40354
++ ISC=1p VAF=100 IKF=0.17 ISS=0 CJS=5.51p VJS=0.99 MJS=0.242193
+.ends
+*$
+*******************************************************************************
+* A = diode anode
+* K = diode cathode
+* C = BJT collector
+* B = BJT base
+* E = BJT emitter
+.SUBCKT H11AV2 A K C B E PARAMS: REL_CTR=1
+* H11AV2 from Motorola   * RAP  5/97
+D1 A D Demit   ;Gallium arsenide infrared emitting diode
+Vsense D K 0    ;Diode Current sense -> IF
+Hd   R 0 Vsense 1
+Rd   R T 10K
+Cd   T 0 0.11n
+* Gpcg models CTR 
+Gpcg C B TABLE  ;Photodetector {IC@IF * (normalized CTR at IF)/(Q1 BF)
++ {10m*REL_CTR*(140.11034*0.999716761^(1/(abs(V(T))+0.1p))*V(T)^1.0873374)/400}
++ (0,0) (10,10)
+Q1 C B E E Qdtect   ;phototransistor detector
+.model Demit D IS=1.22p N=1.962592 RS=1.584805 BV=6 IBV=10U
++ CJO=18.8P VJ=0.532794 M=0.27985 EG=1.424 TT=500N
+* ISC controls dark current
+* IKF controls high current gain
+.model Qdtect NPN IS=12.5P BF=400 NF=1.2742607 BR=10 TF=1.5N TR=2.2u
++ CJE=7.62P VJE=0.99 MJE=0.243609 CJC=19.64P VJC=0.445269 MJC=0.40354
++ ISC=1p VAF=100 IKF=0.17 ISS=0 CJS=5.51p VJS=0.99 MJS=0.242193
+.ends
+*$
+*******************************************************************************
+* A = diode anode
+* K = diode cathode
+* C = BJT collector
+* B = BJT base
+* E = BJT emitter
+.SUBCKT H11AV3 A K C B E PARAMS: REL_CTR=1
+* H11AV3 from Motorola   * RAP  5/97
+D1 A D Demit   ;Gallium arsenide infrared emitting diode
+Vsense D K 0    ;Diode Current sense -> IF
+Hd   R 0 Vsense 1
+Rd   R T 10K
+Cd   T 0 0.11n
+* Gpcg models CTR
+Gpcg C B TABLE  ;Photodetector {IC@IF * (normalized CTR at IF)/(Q1 BF)
++ {7m*REL_CTR*(140.11034*0.999716761^(1/(abs(V(T))+0.1p))*V(T)^1.0873374)/400}
++ (0,0) (10,10)
+Q1 C B E E Qdtect   ;phototransistor detector
+.model Demit D IS=1.22p N=1.962592 RS=1.584805 BV=6 IBV=10U
++ CJO=18.8P VJ=0.532794 M=0.27985 EG=1.424 TT=500N
+* ISC controls dark current
+* IKF controls high current gain
+.model Qdtect NPN IS=12.5P BF=400 NF=1.2742607 BR=20 TF=1.5N TR=2.2u
++ CJE=7.62P VJE=0.99 MJE=0.243609 CJC=19.64P VJC=0.445269 MJC=0.40354
++ ISC=1p VAF=100 IKF=0.07 ISS=0 CJS=5.51p VJS=0.99 MJS=0.242193
+.ends
+*$
+.SUBCKT hlmp-1550 A C P  
+* hlmp-1550 from agilent   *I-Team@Nikkel 01/12/01
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC dhlmp-1550
+.MODEL dhlmp-1550 D
++ IS=33.962E-9
++ N=2.9468
++ RS=15.395
++ IKF=30.596E-9
++ CJO=18.000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=6
++ IBV=100e-6
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.29882713564194) * EXP(0.685942287951934-3.79024376270614*I(VLED))} 
++ (0,0) (100,100)
+
+VLED VC C
+.ENDS
+*$
+.SUBCKT hlmp-1450 A C P  
+* hlmp-1450 from agilent   * I-Team@Nikkel 01/12/01
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC dhlmp-1450
+.MODEL dhlmp-1450 D
++ IS=13.455E-21
++ N=1.2696
++ RS=16.400
++ IKF=21.453E-9
++ CJO=15.000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=6
++ IBV=100e-6
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.35060143903103) * EXP(0.959693465832234-3.67730892288602*I(VLED))} 
++ (0,0) (100,100)
+
+VLED VC C
+.ENDS
+*$
+.SUBCKT hlmp-1350 A C P 
+* hlmp-1350 from agilent   * I-Team@Nikkel 01/12/01
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC dhlmp-1350
+.MODEL dhlmp-1350 D
++ IS=23.452E-12
++ N=1.1543
++ RS=20.511
++ IKF=67.112E-3
++ CJO=11.000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=6
++ IBV=100e-6
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.35624938074234) * EXP(0.989618279101155-3.67725943585378*I(VLED))} 
++ (0,0) (100,100)
+
+VLED VC C
+.ENDS
+*$
+*******************************************************************************
+* A - Anode of LED
+* C - Cathode of LED
+* A1 - Anode of photodetector 1
+* C1 - Cathode of photodetector 1
+* A2 - Anode of photodetector 2
+* C2 - Cathode of photodetector 2
+* K1 - Servo gain
+* K2 - Forward gain
+* K3 - Transfer gain
+.Subckt IL300 A C A1 C1 A2 C2 PARAMS:  K1=0.007  K2=0.007   K3=1
+* IL300 from Siemens   * RAP 5/97
+DLED A E Demit
+VE   E C 0
+E2 D1 0 TABLE  ; {Ip2 vs IF}
++ {(0.955414823*0.999409809^(1/(abs(I(VE))+0.1p))*I(VE)^0.963133681)}
++ (0,0) (1,1)
+Rdly1 D1 D2 1K
+Cdly1 D2 0 0.17N
+Rdly2 D2 D3 1K
+Cdly2 D3 0 0.17N
+Gdly1 C1 A1 VALUE {K1*V(D3)}
+D1 A1 C1 Dtect
+RD1 A1 C1 15G
+Gdly2 C2 A2 VALUE {K3*K2*V(D3)}
+D2 A2 C2 Dtect
+RD2 A2 C2 15G
+.model Demit D IS=1.51E-16 N=1.495822 RS=2.624361 BV=5 IBV=1U
++ CJO=15P VJ=1 M=0.5 EG=1.424 TT=500N
+.model Dtect D IS=0.5p N=1 RS=0.001 BV=50 IBV=1U
++ CJO=14P VJ=0.159621 M=0.344264 EG=1.11 TT=10N
+.ends
+*$
+.SUBCKT Ld271hl A C P  
+* ld271hl from Infineon    * I-Team@Nikkel 12/26/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) RADIANT INTENSITY IN MILLI-WATT PER STERADIAN AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DLD271hl
+.MODEL Dld271hl D
++ IS=2.2926E-6
++ N=1.0356
+*+ RS=.41769
++ RS=.39669
++ IKF=27.950E-6
++ CJO=40.000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5.9
++ IBV=10e-9
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.00452426475604)* EXP(-1.81016727330456-0.161381001927477*I(VLED))} 
++ (0,0) (100,100)
+
+VLED VC C
+.ENDS
+*$
+.SUBCKT ld271L A C P  
+* ld271L from Infineon    * I-Team@Nikkel 12/26/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) RADIANT INTENSITY IN MILLI-WATT PER STERADIAN AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DLD271l
+.MODEL Dld271l D
++ IS=2.2926E-6
++ N=1.0356
+*+ RS=.41769
++ RS=.39669
++ IKF=27.950E-6
++ CJO=40.000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5.9
++ IBV=10e-9
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.00457531056358)* EXP(-1.87443499446845-0.161490657519673*I(VLED))} 
++ (0,0) (100,100)
+
+VLED VC C
+.ENDS
+*$
+.SUBCKT LYS260 A C P  
+* LYS260 from Infineon    * I-Team@Nikkel 12/28/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DLYS260
+.MODEL DLYS260 D
++ IS=10.000E-16
++ N=.57883
++ RS=18.515
++ IKF=926.47E-15
++ CJO=10.000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5.9
++ IBV=0.1e-6
++ TT=5.0000E-9
+
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.48970682128464)*EXP(-1.11226836208524-4.56219691786145*I(VLED))} 
++ (0,0) (100,100)
+
+VLED VC C
+.ENDS
+*$
+.SUBCKT LSS260 A C P  
+* LSS260 from Infineon   * I-Team@Nikkel 12/28/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DLSS260
+.MODEL Dlss260 D
++ IS=10.000E-16
++ N=.57883
++ RS=18.515
++ IKF=926.47E-15
++ CJO=12.000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5.9
++ IBV=.1e-6
++ TT=5.0000E-9
+
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.46333963894078)*EXP(-1.25152567826497-2.08062350002561*I(VLED))} 
++ (0,0) (100,100)
+
+VLED VC C
+.ENDS
+*$
+.SUBCKT LGS260 A C P  
+* LGS260 from Infineon    * I-Team@Nikkel 12/28/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DLGS260
+.MODEL DLGS260 D
++ IS=10.000E-16
++ N=.57883
++ RS=18.515
++ IKF=926.47E-15
++ CJO=15.000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5.9
++ IBV=.1e-6
++ TT=5.0000E-9
+
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.35577459654179)*EXP(-1.35666072828088-22.9579253100891*I(VLED))} 
++ (0,0) (100,100)
+
+VLED VC C
+.ENDS
+*$
+.SUBCKT ld275-2 A C P  
+* LD275-2 from Infineon    * I-Team@Nikkel 12/27/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) RADIANT INTENSITY IN MILLI-WATTS PER STERADIAN AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DLD275-2
+.MODEL Dld275-2 D
++ IS=55.440E-7
++ N=1.9469
++ RS=.42192
++ IKF=17.359
++ CJO=25.000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5.9
++ IBV=10e-9
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.00292580500791)*EXP(-1.48321164288067-0.17742936426499*I(VLED))} 
++ (0,0) (100,100)
+VLED VC C
+.ENDS
+*$
+.SUBCKT ld275-1 A C P  
+* LD275-1 from Infineon    * I-Team@Nikkel 12/27/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) RADIANT INTENSITY IN MILLI-WATTS PER STERADIAN AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DLD275-1
+.MODEL Dld275-1 D
++ IS=55.440E-7
++ N=1.9469
++ RS=.42192
++ IKF=17.359
++ CJO=25.000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5.9
++ IBV=10e-9
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.00638154051524)*EXP(-1.92688406371462-0.193167058432479*I(VLED))} 
++ (0,0) (100,100)
+VLED VC C
+.ENDS
+*$
+.SUBCKT LD274-3 A C P  
+* LD274-3 from Infineon    * I-Team@Nikkel 12/27/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) RADIANT INTENSITY IN MILLI-WATTS PER STERADIAN AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DLD274-3
+.MODEL Dld274-3 D
++ IS=55.440E-7
++ N=1.9469
++ RS=.42192
++ IKF=17.359
++ CJO=25.000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5.9
++ IBV=10e-9
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.00731197073315)*EXP(-0.0274438923815402-0.195482759202276*I(VLED))} 
++ (0,0) (100,100)
+VLED VC C
+.ENDS
+*$
+.SUBCKT LD274-2 A C P  
+* LD274-2 from Infineon    * I-Team@Nikkel 12/27/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) RADIANT INTENSITY IN MILLI-WATTS PER STERADIAN AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DLD274-2
+.MODEL Dld274-2 D
++ IS=55.440E-7
++ N=1.9469
++ RS=.42192
++ IKF=17.359
++ CJO=25.000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5.9
++ IBV=10e-9
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.0063627173309)*EXP(-0.317511849736292-0.193101928800229*I(VLED))} 
++ (0,0) (100,100)
+VLED VC C
+.ENDS
+*$
+.SUBCKT LD274 A C P  
+* LD274 from Infineon    * I-Team@Nikkel 12/27/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) RADIANT INTENSITY IN MILLI-WATTS PER STERADIAN AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DLD274
+.MODEL Dld274 D
++ IS=55.440E-7
++ N=1.9469
++ RS=.42192
++ IKF=17.359
++ CJO=25.000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5.9
++ IBV=10e-9
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.0063275711354)*EXP(-0.856596579030795-0.190961428787817*I(VLED))} 
++ (0,0) (100,100)
+VLED VC C
+.ENDS
+*$
+.SUBCKT ld271h A C P  
+* ld271 from Infineon    * I-Team@Nikkel 12/26/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) RADIANT INTENSITY IN MILLI-WATT PER STERADIAN AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DLD271h
+.MODEL Dld271h D
++ IS=2.2926E-6
++ N=1.0356
++ RS=.39669
++ IKF=27.950E-6
++ CJO=40.000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5.9
++ IBV=10E-9
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.00452426475604)* EXP(-1.81016727330456-0.161381001927477*I(VLED))} 
++ (0,0) (100,100)
+
+VLED VC C
+.ENDS
+*$
+.SUBCKT ld271 A C P  
+* ld271 from Infineon    * I-Team@Nikkel 12/26/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) RADIANT INTENSITY IN MILLI-WATT PER STERADIAN AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DLD271
+.MODEL Dld271 D
++ IS=2.2926E-6
++ N=1.0356
++ RS=.39669
++ IKF=27.950E-6
++ CJO=40.000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5.9
++ IBV=10E-9
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.00457531056358)* EXP(-1.87443499446845-0.161490657519673*I(VLED))} 
++ (0,0) (100,100)
+
+VLED VC C
+.ENDS
+*$
+*******************************************************************************
+*.model MCT2
+* 6-pin DIP: pin #1   #2   #4   #5   #6
+*                 |    |    |    |    |
+.subckt MCT2	pin1 pin2 pin4 pin5 pin6   params: rel_CTR=1
+*		88-01-05 pwt
+* Every manufacturer seems to use their own 4N25 as an equivalent to the
+* General Instruments device.
+  x1 pin1 pin2 pin4 pin5 pin6 A4N25    params: rel_CTR={rel_CTR}
+.ends
+*$
+*******************************************************************************
+*.model MCT2E
+* 6-pin DIP: pin #1   #2   #4   #5   #6
+*                 |    |    |    |    |
+.subckt MCT2E	pin1 pin2 pin4 pin5 pin6    params: rel_CTR=1
+*		88-01-05 pwt
+* Same as MTC2E, higher isolation breakdown voltage.
+  x1 pin1 pin2 pin4 pin5 pin6 A4N25    params: rel_CTR={rel_CTR}
+.ends
+*$
+*******************************************************************************
+.MODEL MLED81 D
++ IS=10.000E-9
++ N=1.1248
++ RS=1.2366
++ IKF=45.752E-15
++ CJO=25.000E-12
++ M=.3333
++ VJ=.75
++ ISR=10.010E-21
++ BV=5.4169
++ IBV=10
++ TT=5.0000E-9
+*$
+*******************************************************************************
+* A = Anode
+* C = Cathode
+* P = (light)Power as output voltage
+.SUBCKT MLED96 A C P PARAMS: Spec=1.0 Sensy=0.5
+* MLED96 from Motorola   * RAP 10/97
+DLED A VC MLED96
+Rleak A VC 40Meg
+Rin P 0 1G
+VLED VC C
+ELED P 0 TABLE {I(VLED)^1.170105501*EXP(-2.114426964-4.065819492*I(VLED))} (0,0) (1,1)
+.MODEL MLED96 D
++ IS=10.000E-21
++ N=1.5219
++ RS=1.7433
++ CJO=50.000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5.3573
++ IBV=10
++ TT=5.0000E-9
+.ends
+*$
+*******************************************************************************
+*.model MOC1005
+* 6-pin DIP: pin #1   #2   #4   #5   #6
+*                 |    |    |    |    |
+.subckt MOC1005	pin1 pin2 pin4 pin5 pin6   params: rel_CTR=1
+*		88-01-05 pwt
+* Motorola equivalent of 4N25
+  x1 pin1 pin2 pin4 pin5 pin6 A4N25    params: rel_CTR={rel_CTR}
+.ends
+*$
+*******************************************************************************
+*.model MOC1006
+* 6-pin DIP: pin #1   #2   #4   #5   #6
+*                 |    |    |    |    |
+.subckt MOC1006	pin1 pin2 pin4 pin5 pin6    params: rel_CTR=1
+*		88-01-05 pwt
+* Motorola equivalent of 4N27
+  x1 pin1 pin2 pin4 pin5 pin6 A4N27    params: rel_CTR={rel_CTR}
+.ends
+*$
+*******************************************************************************
+* A = Anode
+* C = Cathode
+* P = (light)Power as voltage input
+.SUBCKT MRD500 A C P PARAMS: Spec=1.0 Sensy=0.3894
+* MRD500 from Motorola   * RAP 7/97
+DPD A C PhotoDet
+RDUMMY P 0 1G
+GPD C A TABLE {V(P)* Spec * Sensy} (0,0) (1,1)
+.MODEL PhotoDet D IS=1.02p RS=10 N=0.841978 BV=100 IBV=1u 
++ CJO=6.03p VJ=0.202968 M=0.146605 TT=1n ISR=17p
+.ends
+*$
+*******************************************************************************
+* A = Anode
+* C = Cathode
+* P = (light)Power as voltage input
+.SUBCKT MRD510 A C P PARAMS: Spec=1.0 Sensy=0.012
+* MRD510 from Motorola   * RAP 7/97
+DPD A C PhotoDet
+RDUMMY P 0 1G
+GPD C A TABLE {V(P)* Spec * Sensy} (0,0) (1,1)
+.MODEL PhotoDet D IS=1.02p RS=10 N=0.841978 BV=100 IBV=1u 
++ CJO=6.03p VJ=0.202968 M=0.146605 TT=1n ISR=17p
+.ends
+*$
+*******************************************************************************
+* A = diode anode
+* K = diode cathode
+* C = BJT collector
+* B = BJT base
+* E = BJT emitter
+.SUBCKT PS1001 A K C B E PARAMS: REL_CTR=1
+* PS1001 from NEC   * RAP  6/97
+D1 A D Demit   ;Gallium arsenide infrared emitting diode
+Vsense D K 0    ;Diode Current sense -> IF
+Hd   R 0 Vsense 1
+Rd   R T 10K
+Cd   T 0 0.1n
+* Gpcg models CTR
+Gpcg C B TABLE  ;Photodetector {(IC vs IF) / Q1 BF}
++ {REL_CTR*(-0.1645809975*V(T)^3+0.02017240494*V(T)^2+0.001153610396*V(T)+1p)}
++ (0,0) (10,10)
+Q1 C B E E Qdtect   ;phototransistor detector
+.model Demit D IS=1p N=1.968797 RS=8.379573 BV=5 IBV=10U
++ CJO=100P EG=1.424 TT=500N
+* ISC controls dark current
+.model Qdtect NPN IS=25P BF=400 NF=1.3247194 BR=400 TF=1.7N TR=2.711n
++ CJE=12P CJC=25P ISC=12p VAF=100 ISS=0 CJS=10p
+.ends
+*$
+*******************************************************************************
+* A = diode anode
+* K = diode cathode
+* C = BJT collector
+* E = BJT emitter
+.SUBCKT PS2501 A K C E PARAMS: REL_CTR=1
+* PS2501 from NEC   * RAP  6/97
+D1 A D Demit   ;Gallium arsenide infrared emitting diode
+Vsense D K 0    ;Diode Current sense -> IF
+Hd   R 0 Vsense 1
+Rd   R T 10K
+Cd   T 0 0.2n
+* Gpcg models CTR
+Gpcg C B TABLE  ;Photodetector {(IC vs IF) / Q1 BF}
++ {If(V(T)<10m,(V(T)^1.63967642*exp(limit(5.15355287-125.491134*V(T),-50,50))*REL_CTR/100),
++ (V(T)^0.540960664*exp(limit(-1.054818991-10.04734475*V(T),-50,50))*REL_CTR/100))}
++ (0,0) (10,10)
+Q1 C B E E Qdtect   ;phototransistor detector
+Rdummy B 0 4G
+.model Demit D IS=1p N=1.999644 RS=0 BV=6 IBV=10U
++ CJO=50P EG=1.424 TT=500N
+.model Qdtect NPN IS=100P BF=100 NF=1.3 BR=50 TF=0.1N TR=220n
++ CJE=10P CJC=10P VAF=100 ISS=0 CJS=1p
+.ends
+*$
+*******************************************************************************
+* A = diode anode
+* K = diode cathode
+* C = BJT collector
+* E = BJT emitter
+.SUBCKT PS2505 A K C E PARAMS: REL_CTR=1
+* PS2505 from NEC   * RAP  6/97
+D1 A D Demit   ;Gallium arsenide infrared emitting diode
+D2 D A Demit   ;Gallium arsenide infrared emitting diode
+Vsense D K 0    ;Diode Current sense -> IF
+Hd   R 0 Vsense 1
+Rd   R T 10K
+Cd   T 0 54.302p
+* models CTR
+Gpcg C B TABLE  ;Photodetector {(IC vs IF) / Q1 BF}
++ {If(abs(V(T))<10m,
++ (abs(V(T))^1.68372145*exp(limit(5.46602664-137.521721*abs(V(T)),-50,50))*REL_CTR/100),
++ (abs(V(T))^0.441917*exp(limit(-1.54666-6.875337*abs(V(T)),-50,50))*REL_CTR/100))}
++ (0,0) (10,10)
+Q1 C B E Qdtect   ;phototransistor detector
+Rdummy B 0 5G
+.model Demit D IS=1.22E-14 N=1.638226 RS=0.757535 BV=6 IBV=10U
++ CJO=50P EG=1.424 TT=500N
+.model Qdtect NPN IS=100P BF=100 NF=1.25 BR=20 TF=4.86968N TR=1.31131u
++ CJE=197.468P CJC=110.915P VAF=100 ISS=0 CJS=36.04p
+.ends
+*$
+*******************************************************************************
+* A = diode anode
+* K = diode cathode
+* C = BJT collector
+* E = BJT emitter
+.SUBCKT PS2561 A K C E  PARAMS: REL_CTR=1
+* PS2561 from NEC   * RAP  7/97
+D1 A D Demit   ;Gallium arsenide infrared emitting diode
+Vsense D K 0    ;Diode Current sense -> IF
+Hd   R 0 Vsense 1
+Rd   R T 10K
+Cd   T 0 58.6255p
+* Gpcg models CTR
+Gpcg C B TABLE  ;Photodetector {(IC vs IF) / Q1 BF}
++ {If(V(T)<10m,
++ (V(T)^1.605294114*exp(limit(4.920739649-117.1774597*V(T),-50,50))*REL_CTR/100),
++ (V(T)^0.449685774*exp(limit(-1.46495545-7.719515043*V(T),-50,50))*REL_CTR/100))}
++ (0,0) (10,10)
+Q1 C B E E Qdtect   ;phototransistor detector
+Rdummy B 0 5G
+.model Demit D IS=1.22E-14 N=1.638226 RS=0.757535 BV=6 IBV=10U
++ CJO=50P EG=1.424 TT=500N
+.model Qdtect NPN IS=700P BF=100 NF=1.25 BR=20 TF=6.8360n TR=870.419n
++ CJE=78.2623P CJC=90.0285P VAF=100 ISS=0 CJS=44.1055p
+.ends
+*$
+*******************************************************************************
+* A = diode anode
+* K = diode cathode
+* C = BJT collector
+* E = BJT emitter
+.SUBCKT PS2565 A K C E PARAMS: REL_CTR=1
+* PS2565 from NEC   * RAP  7/97
+D1 A D Demit   ;Gallium arsenide infrared emitting diode
+D2 D A Demit   ;Gallium arsenide infrared emitting diode
+Vsense D K 0    ;Diode Current sense -> IF
+Hd   R 0 Vsense 1
+Rd   R T 10K
+Cd   T 0 57.8917p
+* Gpcg models CTR
+Gpcg C B TABLE  ;Photodetector {(IC vs IF) / Q1 BF}
++ {If(abs(V(T))<10m,
++ (abs(V(T))^1.59963925*exp(limit(4.88617775-112.523882*abs(V(T)),-50,50))*REL_CTR/100),
++ (abs(V(T))^0.423169*exp(limit(-1.57596-7.158995*abs(V(T)),-50,50))*REL_CTR/100))}
++ (0,0) (10,10)
+Q1 C B E Qdtect   ;phototransistor detector
+Rdummy B 0 5G
+.model Demit D IS=1.22E-14 N=1.638226 RS=0.757535 BV=6 IBV=10U
++ CJO=50P EG=1.424 TT=500N
+.model Qdtect NPN IS=100P BF=100 NF=1.25 BR=20 TF=13.5378N TR=45.8149N
++ CJE=59.9477P CJC=98.1754P VAF=100 ISS=0 CJS=55.5139p
+.ends
+*$
+*******************************************************************************
+* A = diode anode
+* K = diode cathode
+* C = BJT collector
+* B = BJT base
+* E = BJT emitter
+.SUBCKT PS2601 A K C B E  PARAMS: REL_CTR=1
+* PS2601 from NEC   * RAP  7/97
+D1 A D Demit   ;Gallium arsenide infrared emitting diode
+Vsense D K 0    ;Diode Current sense -> IF
+Hd   R 0 Vsense 1
+Rd   R T 10K
+Cd   T 0 74.7658p
+* Gpcg models CTR
+Gpcg C B TABLE  ;Photodetector {(IC vs IF) / Q1 BF}
++ {If(V(T)<8m,
++ (V(T)^1.80725553*exp(limit(6.53900798-167.674797*V(T),-50,50))*REL_CTR/700),
++ (V(T)^0.705649*exp(limit(0.029347-18.3033*V(T),-50,50))*REL_CTR/700))}
++ (0,0) (10,10)
+Q1 C B E E Qdtect   ;phototransistor detector
+Rdummy B 0 5G
+.model Demit D IS=2.36E-13 N=1.824382 RS=1.773416 BV=6 IBV=10U
++ CJO=30P EG=1.424 TT=500N
+.model Qdtect NPN IS=0.5714P BF=700 NF=1.0895332 BR=20 TF=0.7N TR=10.6n
++ CJE=6P CJC=1.7P VAF=100 ISS=0 CJS=1.p ISC=120p
+.ends
+*$
+*******************************************************************************
+* A = diode anode
+* K = diode cathode
+* C = BJT collector
+* B = BJT base
+* E = BJT emitter
+.SUBCKT PS2621 A K C B E  PARAMS: REL_CTR=1
+* PS2621 from NEC   * RAP  7/97
+D1 A D Demit   ;Gallium arsenide infrared emitting diode
+Vsense D K 0    ;Diode Current sense -> IF
+Hd   R 0 Vsense 1
+Rd   R T 10K
+Cd   T 0 14.7389p
+* Gpcg models CTR
+Gpcg C B TABLE  ;Photodetector {(IC vs IF) / Q1 BF}
++ {If(V(T)<10m,
++ (V(T)^1.61722627*exp(limit(4.36489543-81.9441523*V(T),-50,50))*REL_CTR/700),
++ (V(T)^0.465832*exp(limit(-1.70391-4.509543*V(T),-50,50))*REL_CTR/700))}
++ (0,0) (10,10)
+Q1 C B E E Qdtect   ;phototransistor detector
+Rdummy B 0 5G
+.model Demit D IS=1.09E-13 N=1.693609 RS=1.431383 BV=6 IBV=10U
++ CJO=70P EG=1.424 TT=500N
+.model Qdtect NPN IS=2.857P BF=700 NF=1.1786653 BR=20 TF=1.15564N TR=4.56886n
++ CJE=16.315P CJC=21.1189P VAF=100 ISS=0 CJS=44.5657p ISC=120p
+.ends
+*$
+*******************************************************************************
+* LD = Laser diode cathode
+* C  = Common pin
+* PD = Photodiode anode
+.SUBCKT SLD1121VS LD C PD
+* SLD1121VS from Sony   * RAP  7/97
+Dld C I dlaser
+Vid I LD
+Eop op 0 TABLE {I(Vid)} (0,0) (37m,0.3m) (40m,0.5m) (47m,5m) (100m,40m)
+Rdummy op 0 1k
+Gopd C PD TABLE {V(op)} (0,0) (30m,1.5m)
+Dpd PD C pdetec
+.model dlaser D IS=5E-37 N=1 RS=2 BV=2 IBV=10u 
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=15 IBV=10u
+.ends
+*$
+*******************************************************************************
+* LD = Laser diode cathode
+* C  = Common pin
+* PD = Photodiode anode
+.SUBCKT SLD1132VS LD C PD 
+* SLD1132VS from Sony   * I-Team@Nikkel  01/12/01
+Dld C I dlaser
+Vid I LD
+Eop op 0 TABLE {4.00E-01*I(Vid)-0.021998825}(0,0) (100,100)
+Rdummy op 0 1k
+Gopd C PD TABLE {2.50E-02*V(op)-2.35094E-09} (0,0) (100,100)
+Dpd PD C pdetec
+.model dlaser D IS=5E-37 N=1 RS=2 BV=2 IBV=10u 
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=15 IBV=10u
+.ends
+*$
+.SUBCKT SLR-322MC A C P  
+* SLR-322MC from ROHM   * I-Team@Nikkel 12/21/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DSLR-322MC
+.MODEL DSLR-322MC D
++ IS=6.5062E-9
++ N=2.6008
++ RS=12.215
++ IKF=.55814
++ CJO=1.0000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=4
++ IBV=10E-6
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.3439103729885) * EXP(2.60952901543956-10.7362681152061*I(VLED))} 
++ (0,0) (100,100)
+
+VLED VC C
+.ENDS
+*$
+.SUBCKT SLR-322MG A C P 
+* SLR-322MG from ROHM   * I-Team@Nikkel 12/21/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DSLR-322MG
+.MODEL DSLR-322MG D
++ IS=6.5062E-9
++ N=2.6008
++ RS=12.015
++ IKF=.55814
++ CJO=1.0000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=4
++ IBV=10E-6
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.35130943680336)*EXP(1.74434794769862-10.7589859645732*I(VLED))} 
++ (0,0) (100,100)
+
+VLED VC C
+.ENDS
+*$
+.SUBCKT SLR-322DC A C P  
+* SLR-322DC from ROHM   * I-Team@Nikkel 12/21/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DSLR-322DC
+.MODEL DSLR-322DC D
++ IS=4.9616E-6
++ N=4.4846
++ RS=7.1771
++ IKF=.41167
++ CJO=1.0000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=4
++ IBV=10E-6
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.38829371236236) * EXP(2.26351618238008-6.82323816547945*I(VLED))} 
++ (0,0) (100,100)
+
+VLED VC C
+.ENDS
+*$
+.SUBCKT SLR-322DU A C P 
+* SLR-322DU from ROHM   * I-Team@Nikkel 12/21/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DSLR-322DU
+.MODEL DSLR-322DU D
++ IS=4.9616E-6
++ N=4.4846
++ RS=7.1771
++ IKF=.41167
++ CJO=1.0000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=4
++ IBV=10E-6
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.39506702629299) * EXP(1.37576081543258-6.84453837801289*I(VLED))} 
++ (0,0) (100,100)
+
+
+VLED VC C
+.ENDS
+*$
+.SUBCKT SLR-322VC A C P  
+* SLR-322VC from ROHM   * I-Team@Nikkel 12/21/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DSLR-322VC
+.MODEL DSLR-322VC D
++ IS=40.012E-9
++ N=2.3923
++ RS=11.076
++ IKF=18.790
++ CJO=35.0000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=4
++ IBV=10E-6
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.30536562656478) * EXP(1.87568128641228-1.8231490095182*I(VLED))} 
++ (0,0) (100,100) 
+
+
+VLED VC C
+.ENDS
+*$
+.SUBCKT SLR-322VR A C P  
+* SLR-322VR from ROHM   * I-Team@Nikkel 12/21/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DSLR-322VR
+.MODEL DSLR-322VR D
++ IS=40.012E-9
++ N=2.3923
++ RS=11.076
++ IKF=18.790
++ CJO=35.0000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=4
++ IBV=10E-6
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.30652454964986) * EXP(1.41270914069985-1.98197216671983*I(VLED))} 
++ (0,0) (100,100)
+
+VLED VC C
+.ENDS
+*$
+.SUBCKT SLR-322YC A C P 
+* SLR-322YC from ROHM   * I-Team@Nikkel 12/21/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DSLR-322YC
+.MODEL DSLR-322YC D
++ IS=466.35E-12
++ N=2.0280
++ RS=12.8825
++ IKF=983.28E-6
++ CJO=1.0000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=4
++ IBV=10E-6
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.40967458170785) * EXP(1.9452298986545-5.88894952363614*I(VLED))}  
++ (0,0) (100,100)
+
+
+VLED VC C
+.ENDS
+*$
+.SUBCKT SLR-322YY A C P  
+* SLR-322YY from ROHM   *I-Team@Nikkel 12/21/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DSLR-322YY
+.MODEL DSLR-322YY D
++ IS=466.35E-12
++ N=2.0280
++ RS=12.8825
++ IKF=983.28E-6
++ CJO=1.0000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=4
++ IBV=10E-6
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.40967458170785) * EXP(1.9452298986545-5.88894952363614*I(VLED))}  
++ (0,0) (100,100)
+
+
+VLED VC C
+.ENDS
+*$
+*******************************************************************************
+* LDC = Laser diode cathode
+* PDA = Photo diode anode
+* PDC = photo diode cathode
+* OP  = Output Power pin
+.SUBCKT STH51001 PDC PDA LDC OP
+*  STH51001 from Siemens   * I-Team@Nikkel  12/26/00
+Dld 0 I dlaser
+Vid I LDC
+Eop op 0 TABLE {if(I(Vid)<10m,(5.15E-03*I(Vid)-7.79046E-07),
++ (1.00E-01*I(Vid)-0.000999815))}(0,0)(100,100)
+Rdummy op 0 1k
+Gopd PDC PDA TABLE {V(op)} (0,0) (2m,825u) 
+Dpd PDA PDC pdetec
+.model dlaser D  IS=300.25E-9 N=3.5824 RS=3.10024 IKF=7.8269 ISR=100.00E-12 BV=2 IBV=10u 
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=10 IBV=10u ISR=4.0E-10
+.ends
+*$
+*******************************************************************************
+* LDC = Laser diode cathode
+* LDA = Laser diode anode
+* PDA = Photo diode anode
+* PDC = photo diode cathode
+* OP  = Output Power pin
+.SUBCKT STH51004 PDC PDA LDC LDA OP
+*  STH51004 from Siemens   * I-Team@Nikkel  12/27/00
+Dld LDA I dlaser
+Vid I LDC
+Eop op 0 TABLE {if(I(Vid)<10m,(9.99E-03*I(Vid)+5.57774E-08),
++ (2.00E-01*I(Vid)-0.002000479))}(0,0)(100,100)
+Rdummy op 0 1k
+Gopd PDC PDA TABLE {V(op)} (0,0) (0.5m,550u) 
+Dpd PDA PDC pdetec
+.model dlaser D  IS=300.25E-9 N=3.5824 RS=3.10024 IKF=7.8269 ISR=100.00E-12 BV=2 IBV=10u 
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=10 IBV=10u ISR=4.0E-10
+.ends
+*$
+*******************************************************************************
+* LDC = Laser diode cathode
+* PDA = Photo diode anode
+* PDC = photo diode cathode
+* OP  = Output Power pin
+.SUBCKT STH51005 PDC PDA LDC OP
+*  STH51005 from Siemens   * I-Team@Nikkel  12/27/00
+Dld 0 I dlaser
+Vid I LDC
+Eop op 0 TABLE {if(I(Vid)<10m,(9.99E-03*I(Vid)+5.57774E-08),
++ (2.00E-01*I(Vid)-0.002000479))}(0,0)(100,100)
+Rdummy op 0 1k
+Gopd PDC PDA TABLE {V(op)} (0,0) (0.5m,550u) 
+Dpd PDA PDC pdetec
+.model dlaser D  IS=300.25E-9 N=3.5824 RS=3.10024 IKF=7.8269 ISR=100.00E-12 BV=2 IBV=10u
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=10 IBV=10u ISR=4.0E-10
+.ends
+*$
+*******************************************************************************
+* LDC = Laser diode cathode
+* PDA = Photo diode anode
+* PDC = photo diode cathode
+* OP  = Output Power pin
+.SUBCKT STH51007 PDC PDA LDC OP
+*  STH51007 from Siemens   * I-Team@Nikkel  12/26/00
+Dld 0 I dlaser
+Vid I LDC
+Eop op 0 TABLE {if(I(Vid)<10m,(1.26E-02*I(Vid)-2.58847E-07),
++ (2.00E-01*I(Vid)-0.001999509))}(0,0)(100,100)
+Rdummy op 0 1k
+Gopd PDC PDA TABLE {V(op)} (0,0) (1m,550u) 
+Dpd PDA PDC pdetec
+.model dlaser D  IS=300.25E-9 N=3.5824 RS=3.10024 IKF=7.8269 ISR=100.00E-12 BV=2 IBV=10u 
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=10 IBV=10u ISR=4.0E-10
+.ends
+*$
+*******************************************************************************
+* LDC = Laser diode cathode
+* PDA = Photo diode anode
+* PDC = photo diode cathode
+* OP  = Output Power pin
+.SUBCKT STH81001 PDC PDA LDC OP
+*  STH81001 from Siemens   * I-Team@Nikkel  01/02/01
+Dld 0 I dlaser
+Vid I LDC
+Eop op 0 TABLE {if(I(Vid)<10m,(1.19E-02*I(Vid)-9.39505E-06),
++ (3.00E-01*I(Vid)-0.003001154))}(0,0)(100,100)
+Rdummy op 0 1k
+Gopd PDC PDA TABLE {V(op)} (0,0) (2m,825u)
+Dpd PDA PDC pdetec
+.model dlaser D  IS=300.25E-9 N=3.5824 RS=3.10024 IKF=7.8269 ISR=100.00E-12 BV=2 IBV=10u 
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=10 IBV=10u ISR=4.0E-10
+.ends
+*$
+*******************************************************************************
+* LDC = Laser diode cathode
+* LDA = Laser diode anode
+* PDA = Photo diode anode
+* PDC = photo diode cathode
+* OP  = Output Power pin
+.SUBCKT stl51004 PDC PDA LDC LDA OP
+*  stl51004 from Siemens   * I-Team@Nikkel  01/03/01
+Dld LDA I dlaser
+Vid I LDC
+Eop op 0 TABLE {if(I(Vid)<10m,(2.18E-03*I(Vid)-1.84531E-06),
++ (4.01E-02*I(Vid)-0.000400909))}(0,0)(100,100)
+Rdummy op 0 1k
+Gopd PDC PDA TABLE {V(op)} (0,0) (0.2m,550u)
+Dpd PDA PDC pdetec
+.model dlaser D  IS=300.25E-9 N=3.5824 RS=3.10024 IKF=7.8269 ISR=100.00E-12 BV=2 IBV=10u 
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=10 IBV=10u ISR=4.0E-10
+.ends
+*$
+*******************************************************************************
+* LDC = Laser diode cathode
+* PDA = Photo diode anode
+* PDC = photo diode cathode
+* OP  = Output Power pin
+.SUBCKT stl51005 PDC PDA LDC OP
+*  stl51005 from Siemens   * I-Team@Nikkel  01/03/01
+Dld 0 I dlaser
+Vid I LDC
+Eop op 0 TABLE {if(I(Vid)<10m,(2.18E-03*I(Vid)-1.84531E-06),
++ (4.01E-02*I(Vid)-0.000400909))}(0,0)(100,100)
+Rdummy op 0 1k
+Gopd PDC PDA TABLE {V(op)} (0,0) (0.2m,550u)
+Dpd PDA PDC pdetec
+.model dlaser D  IS=300.25E-9 N=3.5824 RS=3.10024 IKF=7.8269 ISR=100.00E-12 BV=2 IBV=10u 
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=10 IBV=10u ISR=4.0E-10
+.ends
+*$
+*******************************************************************************
+* LDC = Laser diode cathode
+* PDA = Photo diode anode
+* PDC = photo diode cathode
+* OP  = Output Power pin
+.SUBCKT stl51007 PDC PDA LDC OP
+*  stl51007 from Siemens   * I-Team@Nikkel  12/26/00
+Dld 0 I dlaser
+Vid I LDC
+Eop op 0 TABLE {if(I(Vid)<10m,(2.18E-03*I(Vid)-1.84531E-06),
++ (4.01E-02*I(Vid)-0.000400909))}(0,0)(100,100)
+Rdummy op 0 1k
+Gopd PDC PDA TABLE {V(op)} (0,0) (0.2m,550u)
+Dpd PDA PDC pdetec
+.model dlaser D  IS=300.25E-9 N=3.5824 RS=3.10024 IKF=7.8269 ISR=100.00E-12 BV=2 IBV=10u 
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=10 IBV=10u ISR=4.0E-10
+.ends
+*$
+*******************************************************************************
+* LDC = Laser diode cathode
+* LDA = Laser diode anode
+* PDA = Photo diode anode
+* PDC = photo diode cathode
+* OP  = Output Power pin
+.SUBCKT STL51704 PDC PDA LDC LDA OP
+*  STL51704 from Siemens   * I-Team@Nikkel  12/29/00
+Dld LDA I dlaser
+Vid I LDC
+Eop op 0 TABLE {if(I(Vid)<10m,(2.18E-03*I(Vid)-1.84531E-06),
++ (4.01E-02*I(Vid)-0.000400909))}(0,0)(100,100)
+Rdummy op 0 1k
+Gopd PDC PDA TABLE {V(op)} (0,0) (0.2m,550u)
+Dpd PDA PDC pdetec
+.model dlaser D  IS=300.25E-9 N=3.5824 RS=3.10024 IKF=7.8269 ISR=100.00E-12 BV=2 IBV=10u 
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=10 IBV=10u ISR=4.0E-10
+.ends
+*$
+*******************************************************************************
+* LDC = Laser diode cathode
+* LDA = Laser diode anode
+* PDA = Photo diode anode
+* PDC = photo diode cathode
+* OP  = Output Power pin
+.SUBCKT STL51705 PDC PDA LDC OP
+*  STL51705 from Siemens   * I-Team@Nikkel  12/29/00
+Dld 0 I dlaser
+Vid I LDC
+Eop op 0 TABLE {if(I(Vid)<10m,(2.18E-03*I(Vid)-1.84531E-06),
++ (4.01E-02*I(Vid)-0.000400909))}(0,0)(100,100)
+Rdummy op 0 1k
+Gopd PDC PDA TABLE {V(op)} (0,0) (0.2m,550u)
+Dpd PDA PDC pdetec
+.model dlaser D  IS=300.25E-9 N=3.5824 RS=3.10024 IKF=7.8269 ISR=100.00E-12 BV=2 IBV=10u 
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=10 IBV=10u ISR=4.0E-10
+.ends
+*$
+*******************************************************************************
+* LDC = Laser diode cathode
+* PDA = Photo diode anode
+* PDC = photo diode cathode
+* OP  = Output Power pin
+.SUBCKT stl81007 PDC PDA LDC OP
+*  stl81007 from Siemens   * I-Team@Nikkel  12/26/00
+Dld 0 I dlaser
+Vid I LDC
+Eop op 0 TABLE {if(I(Vid)<20m,(1.00E-03*I(Vid)+0),
++ (2.00E-02*I(Vid)-0.000401398))}(0,0)(100,100)
+Rdummy op 0 1k
+Gopd PDC PDA TABLE {V(op)} (0,0) (0.2m,550u)
+Dpd PDA PDC pdetec
+.model dlaser D  IS=300.25E-9 N=3.5824 RS=3.10024 IKF=7.8269 ISR=100.00E-12 BV=2 IBV=10u 
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=10 IBV=10u ISR=4.0E-10
+.ends
+*$
+*******************************************************************************
+* LDC = Laser diode cathode
+* LDA = Laser diode anode
+* PDA = Photo diode anode
+* PDC = photo diode cathode
+* OP  = Output Power pin
+.SUBCKT stm51004 PDC PDA LDC LDA OP
+*  stm51004 from Siemens   * I-Team@Nikkel  12/26/00
+Dld LDA I dlaser
+Vid I LDC
+Eop op 0 TABLE {if(I(Vid)<10m,(4.00E-03*I(Vid)-1.40469E-08),
++ (6.00E-02*I(Vid)-0.000599941))}(0,0)(100,100)
+Rdummy op 0 1k
+Gopd PDC PDA TABLE {V(op)} (0,0) (0.5m,550u)
+Dpd PDA PDC pdetec
+.model dlaser D  IS=300.25E-9 N=3.5824 RS=3.10024 IKF=7.8269 ISR=100.00E-12 BV=2 IBV=10u 
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=10 IBV=10u ISR=4.0E-10
+.ends
+*$
+
+*******************************************************************************
+* LDC = Laser diode cathode
+* PDA = Photo diode anode
+* PDC = photo diode cathode
+* OP  = Output Power pin
+.SUBCKT stm51005 PDC PDA LDC OP
+*  stm51005 from Siemens   * I-Team@Nikkel  12/26/00
+Dld 0 I dlaser
+Vid I LDC
+Eop op 0 TABLE {if(I(Vid)<10m,(4.00E-03*I(Vid)-1.40469E-08),
++ (6.00E-02*I(Vid)-0.000599941))}(0,0)(100,100)
+Rdummy op 0 1k
+Gopd PDC PDA TABLE {V(op)} (0,0) (0.5m,550u)
+Dpd PDA PDC pdetec
+.model dlaser D  IS=300.25E-9 N=3.5824 RS=3.10024 IKF=7.8269 ISR=100.00E-12 BV=2 IBV=10u 
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=10 IBV=10u ISR=4.0E-10
+.ends
+*$
+*******************************************************************************
+* LDA = Laser diode anode
+* LDC = Laser diode cathode
+* PDA = Photodiode anode
+* PDC = Photodiode cathode
+* OP = Power output
+.SUBCKT stm81004 PDC PDA LDC LDA OP
+*  stm81004 from Siemens   * I-Team@Nikkel  12/23/00
+Dld LDA I dlaser
+Vid I LDC
+Eop op 0 TABLE {if(I(Vid)<20m,(2.00E-03*I(Vid)+0),
++ (3.00E-02*I(Vid)-0.00059974))}(0,0)(100,100)
+Rdummy op 0 1k
+Gopd PDC PDA TABLE {V(op)} (0,0) (0.5m,550u)
+Dpd PDA PDC pdetec
+.model dlaser D  IS=300.25E-9 N=3.5824 RS=3.10024 IKF=7.8269 ISR=100.00E-12 BV=2 IBV=10u 
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=10 IBV=10u ISR=4.0E-10
+.ends
+*$
+*******************************************************************************
+* LDC = Laser diode cathode
+* PDA = Photo diode anode
+* PDC = photo diode cathode
+* OP  = Output Power pin
+.SUBCKT stm81005 PDC PDA LDC OP
+*  stm81005 from Siemens   * I-Team@Nikkel  12/23/00
+Dld 0 I dlaser
+Vid I LDC
+Eop op 0 TABLE {if(I(Vid)<20m,(2.00E-03*I(Vid)+0),
++ (3.00E-02*I(Vid)-0.00059974))}(0,0)(100,100)
+Rdummy op 0 1k
+Gopd PDC PDA TABLE {V(op)} (0,0) (0.5m,550u)
+Dpd PDA PDC pdetec
+.model dlaser D  IS=300.25E-9 N=3.5824 RS=3.10024 IKF=7.8269 ISR=100.00E-12 BV=2 IBV=10u 
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=10 IBV=10u ISR=4.0E-10
+.ends
+*$
+*******************************************************************************
+* LDC = Laser diode cathode
+* PDA = Photo diode anode
+* PDC = photo diode cathode
+* OP  = Output Power pin
+.SUBCKT STM81007 PDC PDA LDC OP
+*  STM81007 from Siemens   * I-Team@Nikkel  01/03/01
+Dld 0 I dlaser
+Vid I LDC
+Eop op 0 TABLE {if(I(Vid)<20m,(2.00E-03*I(Vid)+0),
++ (3.00E-02*I(Vid)-0.00059974))}(0,0)(100,100)
+Rdummy op 0 1k
+Gopd PDC PDA TABLE {V(op)} (0,0) (0.5m,550u)
+Dpd PDA PDC pdetec
+.model dlaser D  IS=300.25E-9 N=3.5824 RS=3.10024 IKF=7.8269 ISR=100.00E-12 BV=2 IBV=10u 
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=10 IBV=10u ISR=4.0E-10
+.ends
+*$
+*******************************************************************************
+* LDA = Laser diode anode
+* LDC = Laser diode cathode
+* PDA = Photodiode anode
+* PDC = Photodiode cathode
+* OP = Power output
+.SUBCKT stm91004 PDC PDA LDC LDA OP
+*  stm91004 from Infineon   * I-Team@Nikkel  12/22/00
+Dld LDA I dlaser
+Vid I LDC
+Eop op 0 TABLE {if(I(Vid)<15m,(0.00998417169741874*I(Vid)-9.98E-05),
++ (8.00E-02*I(Vid)-1.20E-03))}(0,0)(100,100)
+Rdummy op 0 1k
+Gopd PDC PDA TABLE {V(op)} (0,0) (1m,900u)
+Dpd PDA PDC pdetec
+.model dlaser D  IS=53.869E-10 N=8.9831 RS=4.0 ISR=100.00E-12 BV=2 IBV=10u 
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=10 IBV=10u ISR=4.0E-10
+.ends
+*$
+*******************************************************************************
+* LDA = Laser diode anode
+* LDC = Laser diode cathode
+* PDA = Photodiode anode
+* PDC = Photodiode cathode
+* OP = Power output
+.SUBCKT stm91005 PDC PDA LDC LDA OP
+*  stm91005 from Infineon   * I-Team@Nikkel  12/22/00
+Dld LDA I dlaser
+Vid I LDC
+Eop op 0 TABLE {if(I(Vid)<15m,(0.00998417169741874*I(Vid)-9.98E-05),
++ (8.00E-02*I(Vid)-1.20E-03))}(0,0)(100,100)
+Rdummy op 0 1k
+Gopd PDC PDA TABLE {V(op)} (0,0) (1m,900u)
+Dpd PDA PDC pdetec
+.model dlaser D  IS=53.869E-10 N=8.9831 RS=4.0 ISR=100.00E-12 BV=2 IBV=10u 
+*EG=2.8 XTI=3 
+.model pdetec D CJO=5p BV=10 IBV=10u ISR=4.0E-10
+.ends
+*$
+.SUBCKT TLGD231 A C P  
+* TLGD231 from TOSHIBA   * I-Team@Nikkel 12/21/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DTLGD231
+.MODEL DTLGD231 D
++ IS=189.96E-15
++ N=1.4012
++ RS=10.915
++ IKF=309.41
++ CJO=1.0000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5
++ IBV=10e-6
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.19287749719507) * EXP(2.51304415174302-3.54753781333439*I(VLED))} 
++ (0,0) (100,100)
+
+VLED VC C
+.ENDS
+*$
+.SUBCKT TLGD233P A C P  
+* TLGD233P from TOSHIBA   * I-Team@Nikkel 12/21/00
+*A=ANODE
+*C=CATHODE
+* P=(LIGHT) LUMINOUS INTENSITY IN CANDELAS AS O/P VOLTAGE
+
+VDROP A A1 1
+DLED A1 VC DTLGD233P
+.MODEL DTLGD233P D
++ IS=38.021E-15
++ N=1.3149
++ RS=10.932
++ IKF=999
++ CJO=1.0000E-12
++ M=.3333
++ VJ=.75
++ ISR=100.00E-12
++ BV=5
++ IBV=100e-6
++ TT=5.0000E-9
+
+*INPUT RESISTANCE
+RIN P 0 1G
+
+*POWER O/P
+ELED P 0 TABLE {PWR(I(VLED),1.12796720667983) * EXP(3.03924869647538-3.52058760888152*I(VLED))} 
++ (0,0) (100,100)
+
+VLED VC C
+.ENDS
+
+*$
+***HCPL-2200,HCPL-2219--------------Hewlett Packard
+***HCPL-2201,HCPL-2201,HCPL-2211,HCPL-2212,HCPL-2231,HCPL-2232,HCPL-0201,HCPL-0211---------Agilent Tech.
+********************
+HCPL-2200
+********************
+.SUBCKT HCPL-2200 A K GND VE VO VCC 
+R_R6         GND IN  1k  
+V_V7         11 K 0Vdc
+D_D1         A 10 LED
+W_W1         VCC IN VW_W1 _W1
+VW_W1         10 11 0V
+.MODEL         _W1 ISWITCH (Roff=1e6 Ron=1 IT=1.48m IH=0.12m TD=0)
+X_U2         IN VE VO $G_DPWR $G_DGND BUFTL
+.MODEL LED D (
++ IS=3.9915E-16
++ N=1.948621
++ RS=1.5217
++ BV=5
++ IBV=10E-6)
+.ENDS HCPL-2200
+*$
+*
+* ENABLE LOW BUFFER WITH TRI-STATE OUTPUT
+*
+*$
+********************
+HCPL-2219
+********************
+.SUBCKT HCPL-2219 A K GND VE VO VCC 
+R_R6         GND IN  1k  
+V_V7         11 K 0Vdc
+D_D1         A 10 LED
+W_W1         VCC IN VW_W1 _W1
+VW_W1         10 11 0V
+X_U2         IN VE VO $G_DPWR $G_DGND BUFTL
+.MODEL         _W1 ISWITCH (Roff=1e6 Ron=1 IT=1.48m IH=0.12m TD=0)
+.MODEL LED D (
++ IS=3.9915E-16
++ N=1.948621
++ RS=1.5217
++ BV=5
++ IBV=10E-6)
+.ENDS HCPL-2219
+*$
+*
+********************
+HCPL-2201
+********************
+.SUBCKT HCPL-2201 A K GND VO VCC 
+R_R6         GND IN  1k  
+V_V7         11 K 0Vdc
+D_D1         A 10 LED
+W_W1         VCC IN VW_W1 _W1
+VW_W1         10 11 0V
+.MODEL         _W1 ISWITCH (Roff=1e6 Ron=1 IT=1.48m IH=0.12m TD=0)
+.MODEL LED D (
++ IS=3.9915E-16
++ N=1.948621
++ RS=1.5217
++ BV=5
++ IBV=10E-6)
+X_U2         IN VO $G_DPWR $G_DGND BUF
+.ENDS HCPL-2201
+*$
+*
+*
+*$
+*
+********************
+HCPL-2202
+********************
+.SUBCKT HCPL-2202 A K GND VO VCC 
+R_R6         GND IN  1k  
+V_V7         11 K 0Vdc
+D_D1         A 10 LED
+W_W1         VCC IN VW_W1 _W1
+VW_W1         10 11 0V
+.MODEL         _W1 ISWITCH (Roff=1e6 Ron=1 IT=1.48m IH=0.12m TD=0)
+.MODEL LED D (
++ IS=3.9915E-16
++ N=1.948621
++ RS=1.5217
++ BV=5
++ IBV=10E-6)
+X_U2         IN VO $G_DPWR $G_DGND BUF
+.ENDS HCPL-2202
+*$
+*
+********************
+HCPL-2211
+********************
+.SUBCKT HCPL-2211 A K GND VO VCC 
+R_R6         GND IN  1k  
+V_V7         11 K 0Vdc
+D_D1         A 10 LED
+W_W1         VCC IN VW_W1 _W1
+VW_W1         10 11 0V
+.MODEL         _W1 ISWITCH (Roff=1e6 Ron=1 IT=1.48m IH=0.12m TD=0)
+.MODEL LED D (
++ IS=3.9915E-16
++ N=1.948621
++ RS=1.5217
++ BV=5
++ IBV=10E-6)
+X_U2         IN VO $G_DPWR $G_DGND BUF
+.ENDS HCPL-2211
+*$
+*
+********************
+HCPL-2212
+********************
+.SUBCKT HCPL-2212 A K GND VO VCC 
+R_R6         GND IN  1k  
+V_V7         11 K 0Vdc
+D_D1         A 10 LED
+W_W1         VCC IN VW_W1 _W1
+VW_W1         10 11 0V
+.MODEL         _W1 ISWITCH (Roff=1e6 Ron=1 IT=1.48m IH=0.12m TD=0)
+.MODEL LED D (
++ IS=3.9915E-16
++ N=1.948621
++ RS=1.5217
++ BV=5
++ IBV=10E-6)
+X_U2         IN VO $G_DPWR $G_DGND BUF
+.ENDS HCPL-2212
+*$
+*
+********************
+HCPL-0201
+********************
+.SUBCKT HCPL-0201 A K GND VO VCC 
+R_R6         GND IN  1k  
+V_V7         11 K 0Vdc
+D_D1         A 10 LED
+W_W1         VCC IN VW_W1 _W1
+VW_W1         10 11 0V
+.MODEL         _W1 ISWITCH (Roff=1e6 Ron=1 IT=1.48m IH=0.12m TD=0)
+.MODEL LED D (
++ IS=3.9915E-16
++ N=1.948621
++ RS=1.5217
++ BV=5
++ IBV=10E-6)
+X_U2         IN VO $G_DPWR $G_DGND BUF
+.ENDS HCPL-0201
+*$
+*
+********************
+HCPL-0211
+********************
+.SUBCKT HCPL-0211 A K GND VO VCC 
+R_R6         GND IN  1k  
+V_V7         11 K 0Vdc
+D_D1         A 10 LED
+W_W1         VCC IN VW_W1 _W1
+VW_W1         10 11 0V
+.MODEL         _W1 ISWITCH (Roff=1e6 Ron=1 IT=1.48m IH=0.12m TD=0)
+.MODEL LED D (
++ IS=3.9915E-16
++ N=1.948621
++ RS=1.5217
++ BV=5
++ IBV=10E-6)
+X_U2         IN VO $G_DPWR $G_DGND BUF
+.ENDS HCPL-0211
+*$
+*
+********************
+HCPL-2231
+********************
+.SUBCKT HCPL-2231 A1 K1 K2 A2 GND VO2 VO1 VCC 
+D_D1         A1 10 LED 
+X_W1    10 11 VCC IN1 SCHEMATIC1_W1 
+V_V7         11 K1 0Vdc
+X_U2         IN1 VO1 $G_DPWR $G_DGND BUF
+R_R6         GND IN1  1k  
+D_D2         A2 15 LED 
+X_W2    15 16 VCC IN SCHEMATIC1_W2 
+V_V8         16 K2 0Vdc
+X_U3         IN VO2 $G_DPWR $G_DGND BUF
+R_R8         GND IN 1k  
+.MODEL LED D (
++ IS=3.9915E-16
++ N=1.948621
++ RS=1.5217
++ BV=5
++ IBV=10E-6)
+.ENDS HCPL-2231
+*$
+**************
+.subckt SCHEMATIC1_W1 1 2 3 4  
+W_W1         3 4 VW_W1 _W1
+VW_W1         1 2 0V
+.MODEL         _W1 ISWITCH Roff=1e6 Ron=1 IT=1.68m IH=0.12m TD=0
+.ends SCHEMATIC1_W1
+*$
+**********
+.subckt SCHEMATIC1_W2 1 2 3 4  
+W_W2         3 4 VW_W2 _W2
+VW_W2         1 2 0V
+.MODEL         _W2 ISWITCH Roff=1e6 Ron=1 IT=1.68m IH=0.12m TD=0
+.ends SCHEMATIC1_W2
+*$
+
+
+********************
+HCPL-2232
+********************
+.SUBCKT HCPL-2232 A1 K1 K2 A2 GND VO2 VO1 VCC 
+D_D1         A1 10 LED 
+X_W1    10 11 VCC IN1 SCHEMATIC1_W1 
+V_V7         11 K1 0Vdc
+X_U2         IN1 VO1 $G_DPWR $G_DGND BUF
+R_R6         GND IN1  1k  
+D_D2         A2 15 LED 
+X_W2    15 16 VCC IN SCHEMATIC1_W2 
+V_V8         16 K2 0Vdc
+X_U3         IN VO2 $G_DPWR $G_DGND BUF
+R_R8         GND IN 1k  
+.MODEL LED D (
++ IS=3.9915E-16
++ N=1.948621
++ RS=1.5217
++ BV=5
++ IBV=10E-6)
+.ENDS HCPL-2232
+*$
